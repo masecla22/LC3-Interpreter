@@ -52,7 +52,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <ival> Register
 %type <ival> Immediate
 
-// %type <instruction>  BranchInstruction JumpInstruction JumpSubroutineInstruction JumpSubroutineRegisterInstruction LoadInstruction LoadIndirectInstruction LoadBaseOffsetInstruction LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
+// %type <instruction> JumpSubroutineInstruction JumpSubroutineRegisterInstruction LoadInstruction LoadIndirectInstruction LoadBaseOffsetInstruction LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
 
 %type <ival> BranchBase
 
@@ -60,6 +60,8 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> AddInstruction
 %type <instruction> AndInstruction
 %type <instruction> BranchInstruction
+
+%type <instruction> JumpInstruction
 
 
 
@@ -153,6 +155,7 @@ BranchBase : BR_P { $$ = 1; }
            | BR_ZN { $$ = 6; }
            | BR_PZN { $$ = 7; };
            | BR { $$ = 0; };
+
 BranchInstruction : 
         BranchBase Label
         {
@@ -177,8 +180,15 @@ BranchInstruction :
         $$ = instruction;
       }
 
+JumpInstruction : JMP Register
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_JMP;
+        instruction.iJmp.sourceRegister = $2;
+        $$ = instruction;
+      };
 
-JumpInstruction : JMP Register;
+
 JumpSubroutineInstruction : JSR Label;
 JumpSubroutineRegisterInstruction : JSRR Register;
 
