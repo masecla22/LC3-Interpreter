@@ -60,7 +60,7 @@ Instruction : AddInstruction | AndInstruction
               | GetCharacterInstruction | OutputInstruction | OutputStringInstruction | InputInstruction | HaltInstruction 
               | OriginDirective | FillDirective | BlockDirective | StringDirective | EndDirective;
 
-Statement : Instruction | Label Instruction;
+Statement : Label Instruction | Instruction;
 
 /* Low level definitions */
 Register : R0 {$$ = 0;} 
@@ -78,7 +78,27 @@ Label: IDENTIFIER;
 
 
 /* Instruction definitions */
-AddInstruction : ADD Register Register Register | ADD Register Register Immediate;
+AddInstruction : ADD Register Register Register 
+                {
+                  UnresolvedInstruction instruction = {0};
+                  instruction.type = I_ADD;
+                  instruction.iAdd.destinationRegister = $2;
+                  instruction.iAdd.sr1 = $3;
+                  instruction.iAdd.sr2 = $4;
+                  instruction.iAdd.isImm = 0;
+                  $$ = instruction;
+                }
+               | ADD Register Register Immediate
+                {
+                  UnresolvedInstruction instruction = {0};
+                  instruction.type = I_ADD;
+                  instruction.iAdd.destinationRegister = $2;
+                  instruction.iAdd.sr1 = $3;
+                  instruction.iAdd.imm5 = $4;
+                  instruction.iAdd.isImm = 1;
+                  $$ = instruction;
+                };
+
 AndInstruction : AND Register Register Register | AND Register Register Immediate;
 
 BranchBase : BR_P | BR_Z | BR_N | BR_PZ | BR_PN | BR_ZN | BR_PZN | BR;
