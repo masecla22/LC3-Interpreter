@@ -76,6 +76,14 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> StoreIndirectInstruction
 %type <instruction> StoreBaseOffsetInstruction
 
+%type <instruction> GetCharacterMacro
+%type <instruction> OutputMacro
+%type <instruction> OutputStringMacro
+%type <instruction> OutputStringPackedMacro
+%type <instruction> InputMacro
+%type <instruction> HaltMacro
+
+
 %start Program
 
 %%
@@ -371,11 +379,47 @@ TrapInstruction : TRAP Immediate {
 
 /* Pseudo instruction definitions */
 
-GetCharacterInstruction : GETC;
-OutputInstruction : OUT;
-OutputStringInstruction : PUTS;
-InputInstruction : IN;
-HaltInstruction : HALT;
+GetCharacterMacro : GETC
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = M_GETC;
+        $$ = instruction;
+      };
+OutputMacro : OUT
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = M_OUT;
+        $$ = instruction;
+      };
+
+OutputStringMacro : PUTS
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = M_PUTS;
+        $$ = instruction;
+      };
+
+OutputStringPackedMacro : PUTSP
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = M_PUTSP;
+        $$ = instruction;
+      };
+
+
+InputMacro : IN
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = M_IN;
+        $$ = instruction;
+      };
+
+HaltMacro : HALT
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = M_HALT;
+        $$ = instruction;
+      };
 
 /* Directive definitions */
 
