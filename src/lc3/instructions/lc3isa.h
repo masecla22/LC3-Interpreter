@@ -171,6 +171,9 @@ typedef struct UnresolvedInstruction {
         NotInstruction iNot;
         // RET and RTI are not in the union because they don't have any fields
         UnresolvedStoreInstruction iSt;
+        UnresolvedStoreIndirectInstruction iSti;
+        StoreBaseOffsetInstruction iStr;
+        
         TrapInstruction iTrap;
     };
 } UnresolvedInstruction;

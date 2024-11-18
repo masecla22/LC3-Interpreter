@@ -52,8 +52,6 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <ival> Register
 %type <ival> Immediate
 
-// %type <instruction> ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
-
 %type <ival> BranchBase
 
 %type <instruction> TrapInstruction
@@ -73,6 +71,10 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %type <instruction> ReturnInstruction
 %type <instruction> ReturnInterruptInstruction
+
+%type <instruction> StoreInstruction
+%type <instruction> StoreIndirectInstruction
+%type <instruction> StoreBaseOffsetInstruction
 
 %start Program
 
@@ -314,9 +316,51 @@ ReturnInterruptInstruction : RTI
         $$ = instruction;
       };
 
-StoreInstruction : ST Register Label;
-StoreIndirectInstruction : STI Register Label;
-StoreBaseOffsetInstruction : STR Register Register Immediate;
+StoreInstruction : ST Register Label 
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_ST;
+        instruction.iSt.sourceRegister = $2;
+        instruction.iSt.isResolved = 0;
+        instruction.iSt.label = strdup($3);
+        $$ = instruction;
+      }
+      | ST Register Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_ST;
+        instruction.iSt.sourceRegister = $2;
+        instruction.iSt.isResolved = 1;
+        instruction.iSt.pcOffset9 = $3;
+        $$ = instruction;
+      };
+StoreIndirectInstruction : STI Register Label
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_STI;
+        instruction.iSti.sourceRegister = $2;
+        instruction.iSti.isResolved = 0;
+        instruction.iSti.label = strdup($3);
+        $$ = instruction;
+      }
+      | STI Register Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_STI;
+        instruction.iSti.sourceRegister = $2;
+        instruction.iSti.isResolved = 1;
+        instruction.iSti.pcOffset9 = $3;
+        $$ = instruction;
+      };
+StoreBaseOffsetInstruction : STR Register Register Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_STR;
+        instruction.iStr.sourceRegister = $2;
+        instruction.iStr.baseRegister = $3;
+        instruction.iStr.offset6 = $4;
+        $$ = instruction;
+      };
 
 TrapInstruction : TRAP Immediate {
   UnresolvedInstruction instruction = {0};
