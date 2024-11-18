@@ -62,6 +62,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> BranchInstruction
 
 %type <instruction> JumpInstruction
+%type <instruction> JumpSubroutineInstruction
 
 
 
@@ -189,7 +190,23 @@ JumpInstruction : JMP Register
       };
 
 
-JumpSubroutineInstruction : JSR Label;
+JumpSubroutineInstruction : JSR Label 
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_JSR;
+        instruction.iJsr.isResolved = 0;
+        instruction.iJsr.label = strdup($2);
+        $$ = instruction;
+      }
+      | JSR Immediate 
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_JSR;
+        instruction.iJsr.isResolved = 1;
+        instruction.iJsr.pcOffset11 = $2;
+        $$ = instruction;
+      };
+
 JumpSubroutineRegisterInstruction : JSRR Register;
 
 LoadInstruction : LD Register Label;
