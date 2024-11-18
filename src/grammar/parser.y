@@ -52,6 +52,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %type <instruction> TrapInstruction
 %type <instruction> AddInstruction
+%type <instruction> AndInstruction
 
 %start Program
 
@@ -113,7 +114,26 @@ AddInstruction : ADD Register Register Register
                   $$ = instruction;
                 };
 
-AndInstruction : AND Register Register Register | AND Register Register Immediate;
+AndInstruction : AND Register Register Register 
+                {
+                  UnresolvedInstruction instruction = {0};
+                  instruction.type = I_AND;
+                  instruction.iAnd.destinationRegister = $2;
+                  instruction.iAnd.sr1 = $3;
+                  instruction.iAnd.sr2 = $4;
+                  instruction.iAnd.isImm = 0;
+                  $$ = instruction;
+                }
+               | AND Register Register Immediate
+                {
+                  UnresolvedInstruction instruction = {0};
+                  instruction.type = I_AND;
+                  instruction.iAnd.destinationRegister = $2;
+                  instruction.iAnd.sr1 = $3;
+                  instruction.iAnd.imm5 = $4;
+                  instruction.iAnd.isImm = 1;
+                  $$ = instruction;
+                };
 
 BranchBase : BR_P | BR_Z | BR_N | BR_PZ | BR_PN | BR_ZN | BR_PZN | BR;
 BranchInstruction : 
