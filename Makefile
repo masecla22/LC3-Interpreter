@@ -1,6 +1,6 @@
 .PHONY: all test clean lexer parser string_map cli
 .DEFAULT_GOAL := all
-.SILENT: test
+.SILENT: test all lexer parser string_map cli clean lc3
 
 
 CC = gcc
@@ -8,13 +8,15 @@ CFLAGS = -Wall -Wextra -Werror -pedantic -g
 
 
 test: all
-		echo "\n"
-		valgrind ./target/lc3 --input=samples/ata/bf.asm --output==-
+		./target/lc3 --input=sample.txt --output=-
 
-all: parser lexer string_map cli
+test_valgrind: all
+		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./target/lc3 --input=sample.txt --output=-
+
+all: parser lexer string_map lc3 cli
 		mkdir -p target
 		$(CC) $(CFLAGS) -o target/main.o -c src/main.c
-		$(CC) $(CFLAGS) -o target/lc3 target/main.o target/lexer/lexer.o target/grammar/parser.o target/map/string_map.o target/cli/cli.o target/cli/default/default_cli.o -lfl -lm
+		$(CC) $(CFLAGS) -o target/lc3 target/main.o target/lexer/lexer.o target/grammar/parser.o target/map/string_map.o target/cli/cli.o target/cli/default/default_cli.o target/_lc3/assembler/lc3assembler.o -lfl
 
 lexer: src/lexer/lexer.fl
 		mkdir -p target/lexer
@@ -29,6 +31,10 @@ parser: src/grammar/parser.y
 string_map: src/map/string_map.c
 		 mkdir -p target/map
 		 $(CC) $(CFLAGS) -c src/map/string_map.c -o target/map/string_map.o
+
+lc3: src/lc3/assembler/lc3assembler.c
+		 mkdir -p target/_lc3/assembler
+		 $(CC) $(CFLAGS) -c src/lc3/assembler/lc3assembler.c -o target/_lc3/assembler/lc3assembler.o
 
 cli: src/cli/cli.c src/cli/default/default_cli.c
 		 mkdir -p target/cli
