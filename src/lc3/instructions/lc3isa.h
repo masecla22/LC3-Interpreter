@@ -37,18 +37,14 @@ typedef struct AddInstruction {
 typedef AddInstruction AndInstruction;
 
 typedef struct BranchInstruction {
-    unsigned int negative;
-    unsigned int zero;
-    unsigned int positive;
+    unsigned int nzp;
 
     unsigned int pcOffset9;
 } BranchInstruction;
 
 
 typedef struct UnresolvedBranchInstruction {
-    unsigned int negative;
-    unsigned int zero;
-    unsigned int positive;
+    unsigned int nzp;
 
     int isResolved;
 

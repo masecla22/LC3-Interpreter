@@ -47,12 +47,22 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %{/** Miscellaneous tokens */%}
 %token <sval> IDENTIFIER
+%type <sval> Label
+
 %type <ival> Register
 %type <ival> Immediate
+
+// %type <instruction>  BranchInstruction JumpInstruction JumpSubroutineInstruction JumpSubroutineRegisterInstruction LoadInstruction LoadIndirectInstruction LoadBaseOffsetInstruction LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
+
+%type <ival> BranchBase
 
 %type <instruction> TrapInstruction
 %type <instruction> AddInstruction
 %type <instruction> AndInstruction
+%type <instruction> BranchInstruction
+
+
+
 
 %start Program
 
@@ -135,10 +145,37 @@ AndInstruction : AND Register Register Register
                   $$ = instruction;
                 };
 
-BranchBase : BR_P | BR_Z | BR_N | BR_PZ | BR_PN | BR_ZN | BR_PZN | BR;
+BranchBase : BR_P { $$ = 1; }
+           | BR_Z { $$ = 2; }
+           | BR_N { $$ = 4; }
+           | BR_PZ { $$ = 3; }
+           | BR_PN { $$ = 5; }
+           | BR_ZN { $$ = 6; }
+           | BR_PZN { $$ = 7; };
+           | BR { $$ = 0; };
 BranchInstruction : 
         BranchBase Label
-      | BranchBase Immediate;
+        {
+          UnresolvedInstruction instruction = {0};
+          instruction.type = I_BR;
+          instruction.iBr.nzp = $1;
+          
+          instruction.iBr.isResolved = 0;
+          instruction.iBr.label = strdup($2);
+
+          $$ = instruction;
+        }
+      | BranchBase Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_BR;
+        instruction.iBr.nzp = $1;
+        
+        instruction.iBr.isResolved = 1;
+        instruction.iBr.pcOffset9 = $2;
+
+        $$ = instruction;
+      }
 
 
 JumpInstruction : JMP Register;
