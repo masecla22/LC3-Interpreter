@@ -9,13 +9,13 @@ extern int yylex(void); // External function to get the next token (from lexer.f
 %}
 
 %{/** Tokens for LC-3 Base instructions */%}
-%token ADD AND BR JMP JSR JSRR LD LDI LDR LEA NOT RET RTI ST STI STR TRAP
+%token ADD AND JMP JSR JSRR LD LDI LDR LEA NOT RET RTI ST STI STR TRAP
 
 %{/** Tokens for LC-3 Pseudo instructions */%}
 %token GETC OUT PUTS IN HALT
 
 %{/** Tokens for LC-3 Condition flags */%}
-%token P Z N PZ PN ZN PZN
+%token BR BR_P BR_Z BR_N BR_PZ BR_PN BR_ZN BR_PZN
 
 %{/** Tokens for LC-3 Registers */%}
 %token R0 R1 R2 R3 R4 R5 R6 R7
@@ -64,7 +64,10 @@ Label: IDENTIFIER;
 AddInstruction : ADD Register Register Register | ADD Register Register Immediate;
 AndInstruction : AND Register Register Register | AND Register Register Immediate;
 
-BranchInstruction : BR FlagSet Label;
+BranchBase : BR_P | BR_Z | BR_N | BR_PZ | BR_PN | BR_ZN | BR_PZN | BR;
+BranchInstruction : 
+        BranchBase Label
+      | BranchBase Immediate;
 
 
 JumpInstruction : JMP Register;

@@ -10,7 +10,6 @@ identifier [a-zA-Z_][a-zA-Z0-9_]*
 
 (?i:add)                 {return ADD;}
 (?i:and)                {return AND;}
-(?i:br)                  {return BR;}
 (?i:jmp)                 {return JMP;}
 (?i:jsr)                 {return JSR;}
 (?i:jsrr)                {return JSRR;}
@@ -45,22 +44,14 @@ And they can be combined together to form flags, however the order matters.
 This assembler will not enforce the order, technically making it a bit more lenient than the LC-3 manual.
 
 */ %}
-(?i:p)                   {return P;}
-(?i:z)                   {return Z;}
-(?i:n)                   {return N;}
-(?i:pz)                  {return PZ;}
-(?i:zp)                  {return PZ;}
-(?i:pn)                  {return PN;}
-(?i:np)                  {return PN;}
-(?i:zn)                  {return ZN;}
-(?i:nz)                  {return ZN;}
-(?i:pzn)                 {return PZN;}
-(?i:pnz)                 {return PZN;}
-(?i:zpn)                 {return PZN;}
-(?i:znp)                 {return PZN;}
-(?i:nzp)                 {return PZN;}
-(?i:npz)                 {return PZN;}
-
+(?i:br)                    { eat(); return BR; }
+(?i:brp)                   { eat(); return BR_P; }
+(?i:brz)                   { eat(); return BR_Z; }
+(?i:brn)                   { eat(); return BR_N; }
+(?i:br(pz|zp))             { eat(); return BR_PZ; }
+(?i:br(pn|np))             { eat(); return BR_PN; }
+(?i:br(zn|nz))             { eat(); return BR_ZN; }
+(?i:br(pzn|pnz|zpn|znp|nzp|npz)) { eat(); return BR_PZN; }
 
 %{ /* LC-3 Registers */ %}
 (?i:r0)                  {return R0;}
