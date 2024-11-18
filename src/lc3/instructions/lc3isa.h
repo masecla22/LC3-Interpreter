@@ -44,24 +44,57 @@ typedef struct BranchInstruction {
     unsigned int pcOffset9;
 } BranchInstruction;
 
-typedef struct JumpInstruction {
-    unsigned int sourceRegister;
-} JumpInstruction;
+
+typedef struct UnresolvedBranchInstruction {
+    unsigned int negative;
+    unsigned int zero;
+    unsigned int positive;
+
+    int isResolved;
+
+    union {
+        unsigned int pcOffset9;
+        char* label;
+    };
+} UnresolvedBranchInstruction;
 
 typedef struct JumpSubroutineInstruction {
     unsigned int pcOffset11;
 } JumpSubroutineInstruction;
 
+typedef struct UnresolvedJumpSubroutineInstruction {
+    int isResolved;
+
+    union {
+        unsigned int pcOffset11;
+        char* label;
+    };
+} UnresolvedJumpSubroutineInstruction;
+
 typedef struct JumpSubroutineRegisterInstruction {
     unsigned int baseRegister;
 } JumpSubroutineRegisterInstruction;
+
+typedef struct JumpInstruction {
+    unsigned int sourceRegister;
+} JumpInstruction;
 
 typedef struct LoadInstruction {
     unsigned int destinationRegister;
     unsigned int pcOffset9;
 } LoadInstruction;
 
+typedef struct UnresolvedLoadInstruction {
+    int isResolved;
+
+    union {
+        unsigned int pcOffset9;
+        char* label;
+    };
+} UnresolvedLoadInstruction;
+
 typedef LoadInstruction LoadIndirectInstruction;  // LDI is the same as LD (in terms of fields)
+typedef UnresolvedLoadInstruction UnresolvedLoadIndirectInstruction; // LDI is the same as LD (in terms of fields)
 
 typedef struct LoadBaseOffsetInstruction {
     unsigned int destinationRegister;
@@ -81,7 +114,17 @@ typedef struct StoreInstruction {
     unsigned int pcOffset9;
 } StoreInstruction;
 
+typedef struct UnresolvedStoreInstruction {
+    int isResolved;
+
+    union {
+        unsigned int pcOffset9;
+        char* label;
+    };
+} UnresolvedStoreInstruction;
+
 typedef StoreInstruction StoreIndirectInstruction;  // STI is the same as ST (in terms of fields)
+typedef UnresolvedStoreInstruction UnresolvedStoreIndirectInstruction;  // STI is the same as ST (in terms of fields)
 
 typedef struct StoreBaseOffsetInstruction {
     unsigned int sourceRegister;
@@ -93,7 +136,7 @@ typedef struct TrapInstruction {
     unsigned int trapVector8;
 } TrapInstruction;
 
-typedef struct LC3ParsedInstruction {
+typedef struct ParsedInstruction {
     InstructionType type;
 
     union {
@@ -109,10 +152,27 @@ typedef struct LC3ParsedInstruction {
         StoreInstruction iSt;
         TrapInstruction iTrap;
     };
-} LC3ParsedInstruction;
+} ParsedInstruction;
 
-unsigned short lc3AssembleInstruction(LC3ParsedInstruction instruction);
-LC3ParsedInstruction lc3DisassembleInstruction(unsigned short instruction);
+typedef struct UnresolvedInstruction {
+    InstructionType type;
 
+    union {
+        AddInstruction iAdd;
+        AndInstruction iAnd;
+        UnresolvedBranchInstruction iBr;
+        JumpInstruction iJmp;
+        UnresolvedJumpSubroutineInstruction iJsr;
+        JumpSubroutineRegisterInstruction iJsrr;
+        UnresolvedLoadInstruction iLd;
+        NotInstruction iNot;
+        // RET and RTI are not in the union because they don't have any fields
+        UnresolvedStoreInstruction iSt;
+        TrapInstruction iTrap;
+    };
+} UnresolvedInstruction;
+
+unsigned short lc3AssembleInstruction(ParsedInstruction instruction);
+ParsedInstruction lc3DisassembleInstruction(unsigned short instruction);
 
 #endif
