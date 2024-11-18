@@ -104,7 +104,6 @@ StringDirective : STRINGZ Immediate;
 EndDirective : END;
 
 
-
 %%
 
 void yyerror(char *msg) {
