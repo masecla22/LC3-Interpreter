@@ -71,6 +71,9 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> LoadEffectiveAddressInstruction
 %type <instruction> NotInstruction
 
+%type <instruction> ReturnInstruction
+%type <instruction> ReturnInterruptInstruction
+
 %start Program
 
 %%
@@ -297,8 +300,19 @@ NotInstruction : NOT Register Register
         $$ = instruction;
       };
 
-ReturnInstruction : RET;
-ReturnInterruptInstruction : RTI;
+ReturnInstruction : RET
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_RET;
+        $$ = instruction;
+      };
+
+ReturnInterruptInstruction : RTI
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_RTI;
+        $$ = instruction;
+      };
 
 StoreInstruction : ST Register Label;
 StoreIndirectInstruction : STI Register Label;
