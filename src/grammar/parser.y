@@ -66,7 +66,8 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> JumpSubroutineRegisterInstruction
 
 %type <instruction> LoadInstruction
-
+%type <instruction> LoadIndirectInstruction
+// %type <instruction> LoadBaseOffsetInstruction
 
 
 %start Program
@@ -237,8 +238,28 @@ LoadInstruction : LD Register Label
       };
 
 
-LoadIndirectInstruction : LDI Register Label;
+LoadIndirectInstruction : LDI Register Label
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_LDI;
+        instruction.iLdi.destinationRegister = $2;
+        instruction.iLdi.isResolved = 0;
+        instruction.iLdi.label = strdup($3);
+        $$ = instruction;
+      } 
+      | LDI Register Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_LDI;
+        instruction.iLdi.destinationRegister = $2;
+        instruction.iLdi.isResolved = 1;
+        instruction.iLdi.pcOffset9 = $3;
+        $$ = instruction;
+      };
+
 LoadBaseOffsetInstruction : LDR Register Register Immediate;
+
+
 LoadEffectiveAddressInstruction : LEA Register Label;
 
 NotInstruction : NOT Register Register;

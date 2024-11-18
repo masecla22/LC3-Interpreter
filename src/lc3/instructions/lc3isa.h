@@ -81,6 +81,7 @@ typedef struct LoadInstruction {
 } LoadInstruction;
 
 typedef struct UnresolvedLoadInstruction {
+    unsigned int destinationRegister;    
     int isResolved;
 
     union {
@@ -161,6 +162,7 @@ typedef struct UnresolvedInstruction {
         UnresolvedJumpSubroutineInstruction iJsr;
         JumpSubroutineRegisterInstruction iJsrr;
         UnresolvedLoadInstruction iLd;
+        UnresolvedLoadIndirectInstruction iLdi;
         NotInstruction iNot;
         // RET and RTI are not in the union because they don't have any fields
         UnresolvedStoreInstruction iSt;
