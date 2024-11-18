@@ -83,6 +83,12 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> InputMacro
 %type <instruction> HaltMacro
 
+%type <instruction> OriginDirective
+%type <instruction> FillDirective
+%type <instruction> BlockDirective
+%type <instruction> StringDirective
+%type <instruction> EndDirective
+
 
 %start Program
 
@@ -426,7 +432,7 @@ HaltMacro : HALT
 OriginDirective : ORIG Immediate;
 FillDirective : FILL Immediate;
 BlockDirective : BLKW Immediate;
-StringDirective : STRINGZ Immediate;
+StringDirective : STRINGZ 
 EndDirective : END;
 
 
