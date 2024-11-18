@@ -100,6 +100,7 @@ typedef struct LoadBaseOffsetInstruction {
 } LoadBaseOffsetInstruction;
 
 typedef LoadInstruction LoadEffectiveAddressInstruction;  // LEA is the same as LD (in terms of fields)
+typedef UnresolvedLoadInstruction UnresolvedLoadEffectiveAddressInstruction;  // LEA is the same as LD (in terms of fields)
 
 typedef struct NotInstruction {
     unsigned int destinationRegister;
@@ -122,6 +123,7 @@ typedef struct UnresolvedStoreInstruction {
 
 typedef StoreInstruction StoreIndirectInstruction;  // STI is the same as ST (in terms of fields)
 typedef UnresolvedStoreInstruction UnresolvedStoreIndirectInstruction;  // STI is the same as ST (in terms of fields)
+
 
 typedef struct StoreBaseOffsetInstruction {
     unsigned int sourceRegister;
@@ -163,6 +165,9 @@ typedef struct UnresolvedInstruction {
         JumpSubroutineRegisterInstruction iJsrr;
         UnresolvedLoadInstruction iLd;
         UnresolvedLoadIndirectInstruction iLdi;
+        LoadBaseOffsetInstruction iLdr;
+        UnresolvedLoadEffectiveAddressInstruction iLea;
+        
         NotInstruction iNot;
         // RET and RTI are not in the union because they don't have any fields
         UnresolvedStoreInstruction iSt;

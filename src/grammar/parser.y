@@ -52,7 +52,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <ival> Register
 %type <ival> Immediate
 
-// %type <instruction> LoadIndirectInstruction LoadBaseOffsetInstruction LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
+// %type <instruction> LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
 
 %type <ival> BranchBase
 
@@ -67,8 +67,8 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %type <instruction> LoadInstruction
 %type <instruction> LoadIndirectInstruction
-// %type <instruction> LoadBaseOffsetInstruction
-
+%type <instruction> LoadBaseOffsetInstruction
+%type <instruction> LoadEffectiveAddressInstruction
 
 %start Program
 
@@ -257,10 +257,35 @@ LoadIndirectInstruction : LDI Register Label
         $$ = instruction;
       };
 
-LoadBaseOffsetInstruction : LDR Register Register Immediate;
+LoadBaseOffsetInstruction : LDR Register Register Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_LDR;
+        instruction.iLdr.destinationRegister = $2;
+        instruction.iLdr.baseRegister = $3;
+        instruction.iLdr.offset6 = $4;
+        $$ = instruction;
+      };
 
 
-LoadEffectiveAddressInstruction : LEA Register Label;
+LoadEffectiveAddressInstruction : LEA Register Label
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_LEA;
+        instruction.iLea.destinationRegister = $2;
+        instruction.iLea.isResolved = 0;
+        instruction.iLea.label = strdup($3);
+        $$ = instruction;
+      }
+      | LEA Register Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_LEA;
+        instruction.iLea.destinationRegister = $2;
+        instruction.iLea.isResolved = 1;
+        instruction.iLea.pcOffset9 = $3;
+        $$ = instruction;
+      }
 
 NotInstruction : NOT Register Register;
 
