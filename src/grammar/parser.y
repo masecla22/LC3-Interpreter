@@ -11,11 +11,20 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %}
 
+%code requires {
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  #include "../../src/lc3/instructions/lc3isa.h"
+}
+
+
 %union 
 {
     int ival;
     char *sval;
 
+    UnresolvedInstruction instruction;
 }
 
 %{/** Tokens for LC-3 Base instructions */%}
@@ -40,6 +49,11 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %token <sval> IDENTIFIER
 %type <ival> Register
 %type <ival> Immediate
+
+%type <instruction> TrapInstruction
+%type <instruction> AddInstruction
+
+%start Program
 
 %%
 
@@ -125,7 +139,12 @@ StoreInstruction : ST Register Label;
 StoreIndirectInstruction : STI Register Label;
 StoreBaseOffsetInstruction : STR Register Register Immediate;
 
-TrapInstruction : TRAP Immediate;
+TrapInstruction : TRAP Immediate {
+  UnresolvedInstruction instruction = {0};
+  instruction.type = I_TRAP;
+  instruction.iTrap.trapVector8 = $2;
+  $$ = instruction;
+};
 
 /* Pseudo instruction definitions */
 
