@@ -11,6 +11,13 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %}
 
+%union 
+{
+    int ival;
+    char *sval;
+
+}
+
 %{/** Tokens for LC-3 Base instructions */%}
 %token ADD AND JMP JSR JSRR LD LDI LDR LEA NOT RET RTI ST STI STR TRAP
 
@@ -27,11 +34,12 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %token ORIG FILL BLKW STRINGZ END
 
 %{/** Tokens for LC-3 Literals */%}
-%token DECIMAL_LITERAL
-%token HEX_LITERAL
+%token <ival> DECIMAL_LITERAL HEX_LITERAL
 
 %{/** Miscellaneous tokens */%}
-%token IDENTIFIER
+%token <sval> IDENTIFIER
+%type <ival> Register
+%type <ival> Immediate
 
 %%
 
@@ -55,8 +63,14 @@ Instruction : AddInstruction | AndInstruction
 Statement : Instruction | Label Instruction;
 
 /* Low level definitions */
-Register : R0 | R1 | R2 | R3 | R4 | R5 | R6 | R7;
-FlagSet : P | Z | N | PZ | PN | ZN | PZN | ;
+Register : R0 {$$ = 0;} 
+         | R1 {$$ = 1;} 
+         | R2 {$$ = 2;} 
+         | R3 {$$ = 3;} 
+         | R4 {$$ = 4;} 
+         | R5 {$$ = 5;} 
+         | R6 {$$ = 6;} 
+         | R7 {$$ = 7;};
 
 Immediate : DECIMAL_LITERAL | HEX_LITERAL;
 
