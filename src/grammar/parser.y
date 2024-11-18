@@ -52,7 +52,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <ival> Register
 %type <ival> Immediate
 
-// %type <instruction> LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
+// %type <instruction> ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
 
 %type <ival> BranchBase
 
@@ -69,6 +69,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> LoadIndirectInstruction
 %type <instruction> LoadBaseOffsetInstruction
 %type <instruction> LoadEffectiveAddressInstruction
+%type <instruction> NotInstruction
 
 %start Program
 
@@ -287,7 +288,14 @@ LoadEffectiveAddressInstruction : LEA Register Label
         $$ = instruction;
       }
 
-NotInstruction : NOT Register Register;
+NotInstruction : NOT Register Register
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_NOT;
+        instruction.iNot.destinationRegister = $2;
+        instruction.iNot.sourceRegister = $3;
+        $$ = instruction;
+      };
 
 ReturnInstruction : RET;
 ReturnInterruptInstruction : RTI;
