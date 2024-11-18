@@ -7,6 +7,9 @@
 *.obj
 *.elf
 
+# Resulting binaries
+target/
+
 # Linker output
 *.ilk
 *.map
@@ -50,3 +53,7 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Ignore sample programs
+samples/
+/.vscode
