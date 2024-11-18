@@ -4,6 +4,7 @@
 
 #include "cli/default/default_cli.h"
 #include "lc3/context/lc3context.h"
+#include "lc3/assembler/lc3assembler.h"
 
 CLIParser* parser = NULL;
 CLIParseResult result = {NULL};
@@ -72,5 +73,14 @@ int main(int argc, char** argv) {
     }
 
     LC3Context context = {input, output, randomized, seed};
-    
+    assemble(context);
+
+    // Close the files
+    if (input != stdin) {
+        fclose(input);
+    }
+
+    if (output != stdout) {
+        fclose(output);
+    }
 }
