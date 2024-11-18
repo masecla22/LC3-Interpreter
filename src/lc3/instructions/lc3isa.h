@@ -113,6 +113,7 @@ typedef struct StoreInstruction {
 } StoreInstruction;
 
 typedef struct UnresolvedStoreInstruction {
+    unsigned int sourceRegister;
     int isResolved;
 
     union {
@@ -173,7 +174,7 @@ typedef struct UnresolvedInstruction {
         UnresolvedStoreInstruction iSt;
         UnresolvedStoreIndirectInstruction iSti;
         StoreBaseOffsetInstruction iStr;
-        
+
         TrapInstruction iTrap;
     };
 } UnresolvedInstruction;
