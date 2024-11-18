@@ -31,7 +31,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %token ADD AND JMP JSR JSRR LD LDI LDR LEA NOT RET RTI ST STI STR TRAP
 
 %{/** Tokens for LC-3 Pseudo instructions */%}
-%token GETC OUT PUTS IN HALT
+%token GETC OUT PUTS PUTSP IN HALT
 
 %{/** Tokens for LC-3 Condition flags */%}
 %token BR BR_P BR_Z BR_N BR_PZ BR_PN BR_ZN BR_PZN
@@ -94,7 +94,7 @@ Instruction : AddInstruction | AndInstruction
               | ReturnInstruction | ReturnInterruptInstruction 
               | StoreInstruction | StoreIndirectInstruction | StoreBaseOffsetInstruction 
               | TrapInstruction 
-              | GetCharacterInstruction | OutputInstruction | OutputStringInstruction | InputInstruction | HaltInstruction 
+              | GetCharacterMacro | OutputMacro | OutputStringMacro | OutputStringPackedMacro | InputMacro | HaltMacro 
               | OriginDirective | FillDirective | BlockDirective | StringDirective | EndDirective;
 
 Statement : Label Instruction | Instruction;
@@ -410,6 +410,7 @@ void printToken(int token){
     case GETC: fprintf(stderr, "GETC"); break;
     case OUT: fprintf(stderr, "OUT"); break;
     case PUTS: fprintf(stderr, "PUTS"); break;
+    case PUTSP: fprintf(stderr, "PUTSP"); break;
     case IN: fprintf(stderr, "IN"); break;
     case HALT: fprintf(stderr, "HALT"); break;
     case ORIG: fprintf(stderr, "ORIG"); break;
