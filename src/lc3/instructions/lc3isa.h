@@ -18,7 +18,18 @@ typedef enum InstructionType {
     I_ST,
     I_STI,
     I_STR,
-    I_TRAP
+    I_TRAP,
+    M_GETC,
+    M_OUT,
+    M_PUTS,
+    M_IN,
+    M_PUTSP,
+    M_HALT,
+    D_ORIG,
+    D_FILL,
+    D_BLKW,
+    D_STRINGZ,
+    D_END
 } InstructionType;
 
 typedef struct AddInstruction {
@@ -136,6 +147,23 @@ typedef struct TrapInstruction {
     unsigned int trapVector8;
 } TrapInstruction;
 
+typedef struct OrigDirective {
+    unsigned int address;
+} OrigDirective;
+
+typedef struct FillDirective {
+    unsigned int value;
+} FillDirective;
+
+typedef struct BlkwDirective {
+    unsigned int count;
+} BlkwDirective;
+
+typedef struct StringzDirective {
+    const char* string;
+} StringzDirective;
+
+
 typedef struct ParsedInstruction {
     InstructionType type;
 
@@ -176,6 +204,15 @@ typedef struct UnresolvedInstruction {
         StoreBaseOffsetInstruction iStr;
 
         TrapInstruction iTrap;
+
+        // Macros are not in the union because they don't have any fields
+
+        OrigDirective iOrig;
+        FillDirective iFill;
+        BlkwDirective iBlkw;
+        StringzDirective iStringz;
+
+        // END is not in the union because it doesn't have any fields
     };
 } UnresolvedInstruction;
 
