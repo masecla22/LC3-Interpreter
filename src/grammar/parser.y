@@ -52,7 +52,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <ival> Register
 %type <ival> Immediate
 
-// %type <instruction> JumpSubroutineInstruction JumpSubroutineRegisterInstruction LoadInstruction LoadIndirectInstruction LoadBaseOffsetInstruction LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
+// %type <instruction> LoadIndirectInstruction LoadBaseOffsetInstruction LoadEffectiveAddressInstruction NotInstruction ReturnInstruction ReturnInterruptInstruction StoreInstruction StoreIndirectInstruction StoreBaseOffsetInstruction 
 
 %type <ival> BranchBase
 
@@ -63,7 +63,9 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %type <instruction> JumpInstruction
 %type <instruction> JumpSubroutineInstruction
+%type <instruction> JumpSubroutineRegisterInstruction
 
+%type <instruction> LoadInstruction
 
 
 
@@ -207,9 +209,34 @@ JumpSubroutineInstruction : JSR Label
         $$ = instruction;
       };
 
-JumpSubroutineRegisterInstruction : JSRR Register;
+JumpSubroutineRegisterInstruction : JSRR Register
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_JSRR;
+        instruction.iJsrr.baseRegister = $2;
+        $$ = instruction;
+      };
 
-LoadInstruction : LD Register Label;
+LoadInstruction : LD Register Label 
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_LD;
+        instruction.iLd.destinationRegister = $2;
+        instruction.iLd.isResolved = 0;
+        instruction.iLd.label = strdup($3);
+        $$ = instruction;
+      }
+      | LD Register Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = I_LD;
+        instruction.iLd.destinationRegister = $2;
+        instruction.iLd.isResolved = 1;
+        instruction.iLd.pcOffset9 = $3;
+        $$ = instruction;
+      };
+
+
 LoadIndirectInstruction : LDI Register Label;
 LoadBaseOffsetInstruction : LDR Register Register Immediate;
 LoadEffectiveAddressInstruction : LEA Register Label;
