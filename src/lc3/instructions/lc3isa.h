@@ -207,10 +207,10 @@ typedef struct UnresolvedInstruction {
 
         // Macros are not in the union because they don't have any fields
 
-        OrigDirective iOrig;
-        FillDirective iFill;
-        BlkwDirective iBlkw;
-        StringzDirective iStringz;
+        OrigDirective dOrig;
+        FillDirective dFill;
+        BlkwDirective dBlkw;
+        StringzDirective dStringz;
 
         // END is not in the union because it doesn't have any fields
     };

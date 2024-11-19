@@ -47,6 +47,8 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %{/** Miscellaneous tokens */%}
 %token <sval> IDENTIFIER
+%token <sval> STRING_LITERAL
+
 %type <sval> Label
 
 %type <ival> Register
@@ -429,12 +431,40 @@ HaltMacro : HALT
 
 /* Directive definitions */
 
-OriginDirective : ORIG Immediate;
-FillDirective : FILL Immediate;
-BlockDirective : BLKW Immediate;
-StringDirective : STRINGZ 
-EndDirective : END;
-
+OriginDirective : ORIG Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = D_ORIG;
+        instruction.dOrig.address = $2;
+        $$ = instruction;
+      };
+FillDirective : FILL Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = D_FILL;
+        instruction.dFill.value = $2;
+        $$ = instruction;
+      };
+BlockDirective : BLKW Immediate
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = D_BLKW;
+        instruction.dBlkw.count = $2;
+        $$ = instruction;
+      };
+StringDirective : STRINGZ STRING_LITERAL
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = D_STRINGZ;
+        instruction.dStringz.string = strdup($2);
+        $$ = instruction;
+      };
+EndDirective : END
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = D_END;
+        $$ = instruction;
+      }; 
 
 %%
 
