@@ -81,11 +81,11 @@ This assembler will not enforce the order, technically making it a bit more leni
 (?i:r7)                  { eat(); return R7; }
 
 %{ /* LC-3 Directives */ %}
-(?i:.orig)               { eat(); return ORIG; }
-(?i:.fill)               { eat(); return FILL; }
-(?i:.blkw)               { eat(); return BLKW; }
-(?i:.stringz)            { eat(); return STRINGZ; }
-(?i:.end)                { eat(); return END; }
+(?i:\.orig)               { eat(); return ORIG; }
+(?i:\.fill)               { eat(); return FILL; }
+(?i:\.blkw)               { eat(); return BLKW; }
+(?i:\.stringz)            { eat(); return STRINGZ; }
+(?i:\.end)                { eat(); return END; }
 
 %{ /* LC-3 Comments */ %}
 ;[^\n]*                   { eat(); /* eat comment */  }
