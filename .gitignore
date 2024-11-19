@@ -45,6 +45,10 @@ target/
 *.idb
 *.pdb
 
+# Test Logs and output
+test/*.log
+test/*.otp
+
 # Kernel Module Compile Results
 *.mod*
 *.cmd
