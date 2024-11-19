@@ -48,6 +48,8 @@ target/
 # Test Logs and output
 test/*.log
 test/*.otp
+test/*.obj
+test/*.sym
 
 # Kernel Module Compile Results
 *.mod*
