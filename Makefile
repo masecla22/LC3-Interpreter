@@ -8,15 +8,15 @@ CFLAGS = -Wall -Wextra -Werror -pedantic -g
 
 
 test: all
-		./target/lc3 --input=sample.txt --output=-
+		./target/lc3 --input=samples/ata/bf.asm --output=-
 
 test_valgrind: all
-		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./target/lc3 --input=sample.txt --output=-
+		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./target/lc3 --input=samples/ata/bf.asm --output=-
 
 all: parser lexer string_map lc3 cli
 		mkdir -p target
 		$(CC) $(CFLAGS) -o target/main.o -c src/main.c
-		$(CC) $(CFLAGS) -o target/lc3 target/main.o target/lexer/lexer.o target/grammar/parser.o target/map/string_map.o target/cli/cli.o target/cli/default/default_cli.o target/_lc3/assembler/lc3assembler.o -lfl
+		$(CC) $(CFLAGS) -o target/lc3 target/main.o target/lexer/lexer.o target/grammar/parser.o target/map/string_map.o target/cli/cli.o target/cli/default/default_cli.o target/_lc3/assembler/lc3assembler.o target/_lc3/assembler/lc3isa.o -lfl
 
 lexer: src/lexer/lexer.fl
 		mkdir -p target/lexer
@@ -32,9 +32,10 @@ string_map: src/map/string_map.c
 		 mkdir -p target/map
 		 $(CC) $(CFLAGS) -c src/map/string_map.c -o target/map/string_map.o
 
-lc3: src/lc3/assembler/lc3assembler.c
+lc3: src/lc3/assembler/lc3assembler.c src/lc3/instructions/lc3isa.c
 		 mkdir -p target/_lc3/assembler
 		 $(CC) $(CFLAGS) -c src/lc3/assembler/lc3assembler.c -o target/_lc3/assembler/lc3assembler.o
+		 $(CC) $(CFLAGS) -c src/lc3/instructions/lc3isa.c -o target/_lc3/assembler/lc3isa.o
 
 cli: src/cli/cli.c src/cli/default/default_cli.c
 		 mkdir -p target/cli
