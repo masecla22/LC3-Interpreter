@@ -50,6 +50,9 @@ test/*.log
 test/*.otp
 test/*.obj
 test/*.sym
+test/*.mem
+test/lc3as
+test/lc3sim
 
 # Kernel Module Compile Results
 *.mod*
