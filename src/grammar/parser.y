@@ -2,6 +2,7 @@
 #define YY_DEBUG 1
 
 #include <stdio.h>
+#include "../../src/lc3/instructions/lc3isa.h"
 
 extern int yylex(void); // External function to get the next token (from lexer.fl)
 extern void showErrorLine(); // Function to show the line where the error occurred (from lexer.fl)
@@ -9,6 +10,7 @@ extern void printToken(int token); // Function to print the token (from lexer.fl
 
 void yyerror(char *msg);    // Function to handle parsing errors
 
+LabelledInstructionList *parsedInstructions; // List of parsed instructions
 
 %}
 
@@ -30,6 +32,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
     char *sval;
 
     UnresolvedInstruction instruction;
+    LabelledInstruction labelledInstruction;
 }
 
 %{/** Tokens for LC-3 Base instructions */%}
@@ -96,6 +99,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 %type <instruction> StringDirective
 %type <instruction> EndDirective
 
+%type <instruction> Instruction
 
 %start Program
 
@@ -103,10 +107,28 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 /* Overarching grammar rules */
 
-Program : Statements;
+Program : {
             // yydebug = 1;  
+            // Initialize the list of parsed instructions
+            parsedInstructions = createLabelledInstructionList();
+          } 
+          Statements;
 
 Statements : Statement | Statements Statement;
+Statement : Label Instruction {
+              LabelledInstruction labelledInstruction = {0};
+              labelledInstruction.label = $1;
+              // printf("Adding label |%s| --> %d\n", $1, $2.type);
+              labelledInstruction.instruction = $2;
+              addLabelledInstruction(parsedInstructions, labelledInstruction);
+            }
+          | Instruction 
+          {
+            LabelledInstruction labelledInstruction = {0};
+            labelledInstruction.label = NULL;
+            labelledInstruction.instruction = $1;
+            addLabelledInstruction(parsedInstructions, labelledInstruction);
+          };
 
 Instruction : AddInstruction | AndInstruction 
               | BranchInstruction 
@@ -118,8 +140,6 @@ Instruction : AddInstruction | AndInstruction
               | TrapInstruction 
               | GetCharacterMacro | OutputMacro | OutputStringMacro | OutputStringPackedMacro | InputMacro | HaltMacro 
               | OriginDirective | FillDirective | BlockDirective | StringDirective | EndDirective;
-
-Statement : Label Instruction | Instruction;
 
 /* Low level definitions */
 Register : R0 {$$ = 0;} 
