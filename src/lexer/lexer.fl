@@ -98,6 +98,7 @@ This assembler will not enforce the order, technically making it a bit more leni
 
 %{ /* LC-3 Identifiers */ %}
 {identifier}             {eat(); yylval.sval = strlen(yytext) ? strdup(yytext) : NULL; return IDENTIFIER;}
+{stringLiteral}          {eat(); yylval.sval = strlen(yytext) ? strdup(yytext) : NULL; return STRING_LITERAL;}
 
 
 %{ /* LC-3 Special characters */ %}
