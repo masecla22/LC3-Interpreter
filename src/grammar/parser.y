@@ -196,7 +196,7 @@ BranchInstruction :
           instruction.iBr.nzp = $1;
           
           instruction.iBr.isResolved = 0;
-          instruction.iBr.label = strdup($2);
+          instruction.iBr.label = $2;
 
           $$ = instruction;
         }
@@ -226,7 +226,7 @@ JumpSubroutineInstruction : JSR Label
         UnresolvedInstruction instruction = {0};
         instruction.type = I_JSR;
         instruction.iJsr.isResolved = 0;
-        instruction.iJsr.label = strdup($2);
+        instruction.iJsr.label = $2;
         $$ = instruction;
       }
       | JSR Immediate 
@@ -252,7 +252,7 @@ LoadInstruction : LD Register Label
         instruction.type = I_LD;
         instruction.iLd.destinationRegister = $2;
         instruction.iLd.isResolved = 0;
-        instruction.iLd.label = strdup($3);
+        instruction.iLd.label = $3;
         $$ = instruction;
       }
       | LD Register Immediate
@@ -272,7 +272,7 @@ LoadIndirectInstruction : LDI Register Label
         instruction.type = I_LDI;
         instruction.iLdi.destinationRegister = $2;
         instruction.iLdi.isResolved = 0;
-        instruction.iLdi.label = strdup($3);
+        instruction.iLdi.label = $3;
         $$ = instruction;
       } 
       | LDI Register Immediate
@@ -302,7 +302,7 @@ LoadEffectiveAddressInstruction : LEA Register Label
         instruction.type = I_LEA;
         instruction.iLea.destinationRegister = $2;
         instruction.iLea.isResolved = 0;
-        instruction.iLea.label = strdup($3);
+        instruction.iLea.label = $3;
         $$ = instruction;
       }
       | LEA Register Immediate
@@ -344,7 +344,7 @@ StoreInstruction : ST Register Label
         instruction.type = I_ST;
         instruction.iSt.sourceRegister = $2;
         instruction.iSt.isResolved = 0;
-        instruction.iSt.label = strdup($3);
+        instruction.iSt.label = $3;
         $$ = instruction;
       }
       | ST Register Immediate
@@ -362,7 +362,7 @@ StoreIndirectInstruction : STI Register Label
         instruction.type = I_STI;
         instruction.iSti.sourceRegister = $2;
         instruction.iSti.isResolved = 0;
-        instruction.iSti.label = strdup($3);
+        instruction.iSti.label = $3;
         $$ = instruction;
       }
       | STI Register Immediate
@@ -462,7 +462,7 @@ StringDirective : STRINGZ STRING_LITERAL
       {
         UnresolvedInstruction instruction = {0};
         instruction.type = D_STRINGZ;
-        instruction.dStringz.string = strdup($2);
+        instruction.dStringz.string = $2;
         $$ = instruction;
       };
 EndDirective : END
