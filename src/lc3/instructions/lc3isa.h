@@ -160,7 +160,7 @@ typedef struct BlkwDirective {
 } BlkwDirective;
 
 typedef struct StringzDirective {
-    const char* string;
+    char* string;
 } StringzDirective;
 
 
@@ -215,6 +215,25 @@ typedef struct UnresolvedInstruction {
         // END is not in the union because it doesn't have any fields
     };
 } UnresolvedInstruction;
+
+void printInstruction(UnresolvedInstruction instruction);
+
+typedef struct LabelledInstruction {
+    char* label;
+    UnresolvedInstruction instruction;
+} LabelledInstruction;
+
+void printLabelledInstruction(LabelledInstruction instruction);
+
+typedef struct LabelledInstructionList {
+    LabelledInstruction* instructions;
+    unsigned int count;
+    unsigned int capacity;
+} LabelledInstructionList;
+
+LabelledInstructionList* createLabelledInstructionList(void);
+void destroyLabelledInstructionList(LabelledInstructionList* list);
+void addLabelledInstruction(LabelledInstructionList* list, LabelledInstruction instruction);
 
 unsigned short lc3AssembleInstruction(ParsedInstruction instruction);
 ParsedInstruction lc3DisassembleInstruction(unsigned short instruction);
