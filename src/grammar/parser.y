@@ -1,4 +1,5 @@
 %{
+#define YY_DEBUG 1
 
 #include <stdio.h>
 
@@ -11,11 +12,15 @@ void yyerror(char *msg);    // Function to handle parsing errors
 
 %}
 
+%define parse.trace
+
 %code requires {
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
   #include "../../src/lc3/instructions/lc3isa.h"
+
+  extern int yydebug;
 }
 
 
@@ -99,6 +104,7 @@ void yyerror(char *msg);    // Function to handle parsing errors
 /* Overarching grammar rules */
 
 Program : Statements;
+            // yydebug = 1;  
 
 Statements : Statement | Statements Statement;
 
