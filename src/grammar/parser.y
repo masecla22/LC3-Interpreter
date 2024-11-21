@@ -118,7 +118,6 @@ Statements : Statement | Statements Statement;
 Statement : Label Instruction {
               LabelledInstruction labelledInstruction = {0};
               labelledInstruction.label = $1;
-              // printf("Adding label |%s| --> %d\n", $1, $2.type);
               labelledInstruction.instruction = $2;
               addLabelledInstruction(parsedInstructions, labelledInstruction);
             }

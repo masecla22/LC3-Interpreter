@@ -253,7 +253,7 @@ void printInstruction(UnresolvedInstruction instruction) {
 
 void printLabelledInstruction(LabelledInstruction instruction) {
     if (instruction.label != NULL) {
-        printf("%s --> ", instruction.label);
+        printf("%s ", instruction.label);
     }
 
     printInstruction(instruction.instruction);
