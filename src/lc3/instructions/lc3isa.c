@@ -188,10 +188,16 @@ void printInstruction(UnresolvedInstruction instruction) {
             printf(".ORIG x%04X\n", instruction.dOrig.address);
             break;
 
-        case D_FILL:
-            printf(".FILL x%04X\n", instruction.dFill.value);
-            break;
-
+        case D_FILL: {
+            int signedValue = instruction.dFill.value;
+            if (signedValue < 256 && signedValue > -256) {
+                printf(".FILL #%d\n", signedValue);
+                break;
+            } else {
+                printf(".FILL x%04X\n", instruction.dFill.value);
+                break;
+            }
+        }
         case D_BLKW:
             printf(".BLKW %d\n", instruction.dBlkw.count);
             break;
