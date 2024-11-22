@@ -481,11 +481,16 @@ StringDirective : STRINGZ STRING_LITERAL
       {
         UnresolvedInstruction instruction = {0};
         instruction.type = D_STRINGZ;
-        
-        $2++; // Remove the first character (")
-        $2[strlen($2) - 1] = 0; // Remove the last character (")
 
-        instruction.dStringz.string = $2;
+        // Remove the quotes from the string
+        // -2 for the quotes, +1 for the null terminator
+        char* result = malloc(strlen($2) - 2 + 1);
+        strncpy(result, $2 + 1, strlen($2) - 2);
+
+        // Since $2 was allocated by strdup, we need to free it
+        free($2);
+
+        instruction.dStringz.string = result;
         $$ = instruction;
       };
 EndDirective : END
