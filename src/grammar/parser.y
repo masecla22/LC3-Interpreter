@@ -10,7 +10,7 @@ extern void printToken(int token); // Function to print the token (from lexer.fl
 
 void yyerror(char *msg);    // Function to handle parsing errors
 
-LabelledInstructionList *parsedInstructions; // List of parsed instructions
+LabelledInstructionList *labelledInstructions; // List of parsed instructions
 
 %}
 
@@ -110,7 +110,7 @@ LabelledInstructionList *parsedInstructions; // List of parsed instructions
 Program : {
             // yydebug = 1;  
             // Initialize the list of parsed instructions
-            parsedInstructions = createLabelledInstructionList();
+            labelledInstructions = createLabelledInstructionList();
           } 
           Statements;
 
@@ -119,14 +119,14 @@ Statement : Label Instruction {
               LabelledInstruction labelledInstruction = {0};
               labelledInstruction.label = $1;
               labelledInstruction.instruction = $2;
-              addLabelledInstruction(parsedInstructions, labelledInstruction);
+              addLabelledInstruction(labelledInstructions, labelledInstruction);
             }
           | Instruction 
           {
             LabelledInstruction labelledInstruction = {0};
             labelledInstruction.label = NULL;
             labelledInstruction.instruction = $1;
-            addLabelledInstruction(parsedInstructions, labelledInstruction);
+            addLabelledInstruction(labelledInstructions, labelledInstruction);
           };
 
 Instruction : AddInstruction | AndInstruction 

@@ -235,7 +235,4 @@ LabelledInstructionList* createLabelledInstructionList(void);
 void destroyLabelledInstructionList(LabelledInstructionList* list);
 void addLabelledInstruction(LabelledInstructionList* list, LabelledInstruction instruction);
 
-unsigned short lc3AssembleInstruction(ParsedInstruction instruction);
-ParsedInstruction lc3DisassembleInstruction(unsigned short instruction);
-
 #endif
