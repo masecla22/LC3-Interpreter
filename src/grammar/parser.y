@@ -481,6 +481,10 @@ StringDirective : STRINGZ STRING_LITERAL
       {
         UnresolvedInstruction instruction = {0};
         instruction.type = D_STRINGZ;
+        
+        $2++; // Remove the first character (")
+        $2[strlen($2) - 1] = 0; // Remove the last character (")
+
         instruction.dStringz.string = $2;
         $$ = instruction;
       };
