@@ -4,10 +4,6 @@
 #include "../instructions/lc3isa.h"
 #include "../context/lc3context.h"
 
-void assemble(LC3Context ctx);
-
-unsigned short lc3AssembleInstruction(ParsedInstruction instruction);
-ParsedInstruction lc3DisassembleInstruction(unsigned short instruction);
-
+unsigned short* assemble(LC3Context ctx);
 
 #endif // LC3_ASSEMBLER_H
