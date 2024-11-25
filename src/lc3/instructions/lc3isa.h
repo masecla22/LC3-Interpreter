@@ -166,6 +166,7 @@ typedef struct StringzDirective {
 
 typedef struct ParsedInstruction {
     InstructionType type;
+    int memoryLocation;
 
     union {
         AddInstruction iAdd;
@@ -175,12 +176,30 @@ typedef struct ParsedInstruction {
         JumpSubroutineInstruction iJsr;
         JumpSubroutineRegisterInstruction iJsrr;
         LoadInstruction iLd;
+        LoadIndirectInstruction iLdi;
+        LoadBaseOffsetInstruction iLdr;
+        LoadEffectiveAddressInstruction iLea;
+        
         NotInstruction iNot;
         // RET and RTI are not in the union because they don't have any fields
         StoreInstruction iSt;
+        StoreIndirectInstruction iSti;
+        StoreBaseOffsetInstruction iStr;
+
         TrapInstruction iTrap;
+
+        // Macros are not in the union because they don't have any fields
+
+        OrigDirective dOrig;
+        FillDirective dFill;
+        BlkwDirective dBlkw;
+        StringzDirective dStringz;
+
+        // END is not in the union because it doesn't have any fields
     };
 } ParsedInstruction;
+
+void printParsedInstruction(ParsedInstruction instruction);
 
 typedef struct UnresolvedInstruction {
     InstructionType type;
@@ -216,7 +235,7 @@ typedef struct UnresolvedInstruction {
     };
 } UnresolvedInstruction;
 
-void printInstruction(UnresolvedInstruction instruction);
+void printUnresolvedInstruction(UnresolvedInstruction instruction);
 
 typedef struct LabelledInstruction {
     char* label;

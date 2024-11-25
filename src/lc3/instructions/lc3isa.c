@@ -73,8 +73,6 @@ void destroyLabelledInstructionList(LabelledInstructionList* list) {
 }
 
 void addLabelledInstruction(LabelledInstructionList* list, LabelledInstruction instruction) {
-    printLabelledInstruction(instruction);
-    
     if (list->count == list->capacity - 2) {
         list->capacity *= 2;
         list->instructions = realloc(list->instructions, sizeof(LabelledInstruction) * list->capacity);
@@ -88,7 +86,7 @@ void addLabelledInstruction(LabelledInstructionList* list, LabelledInstruction i
     list->instructions[list->count++] = instruction;
 }
 
-void printInstruction(UnresolvedInstruction instruction) {
+void printUnresolvedInstruction(UnresolvedInstruction instruction) {
     switch (instruction.type) {
         case I_ADD:
             printf("ADD R%d, R%d, ", instruction.iAdd.destinationRegister, instruction.iAdd.sr1);
@@ -262,7 +260,118 @@ void printLabelledInstruction(LabelledInstruction instruction) {
         printf("%s ", instruction.label);
     }
 
-    printInstruction(instruction.instruction);
+    printUnresolvedInstruction(instruction.instruction);
+}
+
+void printParsedInstruction(ParsedInstruction instruction) {
+    switch (instruction.type) {
+        case I_ADD:
+            printf("ADD R%d, R%d, ", instruction.iAdd.destinationRegister, instruction.iAdd.sr1);
+            if (instruction.iAdd.isImm) {
+                printf("#%d\n", instruction.iAdd.imm5);
+            } else {
+                printf("R%d\n", instruction.iAdd.sr2);
+            }
+            break;
+
+        case I_AND:
+            printf("AND R%d, R%d, ", instruction.iAnd.destinationRegister, instruction.iAnd.sr1);
+            if (instruction.iAnd.isImm) {
+                printf("#%d\n", instruction.iAnd.imm5);
+            } else {
+                printf("R%d\n", instruction.iAnd.sr2);
+            }
+            break;
+
+        case I_BR:
+            printf("BR");
+            if (instruction.iBr.nzp & 4) printf("n");
+            if (instruction.iBr.nzp & 2) printf("z");
+            if (instruction.iBr.nzp & 1) printf("p");
+            printf(" #%d\n", instruction.iBr.pcOffset9);
+            break;
+
+        case I_JMP:
+            printf("JMP R%d\n", instruction.iJmp.sourceRegister);
+            break;
+
+        case I_JSR:
+            printf("JSR #%d\n", instruction.iJsr.pcOffset11);
+            break;
+
+        case I_JSRR:
+            printf("JSRR R%d\n", instruction.iJsrr.baseRegister);
+            break;
+
+        case I_LD:
+            printf("LD R%d, #%d\n", instruction.iLd.destinationRegister, instruction.iLd.pcOffset9);
+            break;
+
+        case I_LDI:
+            printf("LDI R%d, #%d\n", instruction.iLdi.destinationRegister, instruction.iLdi.pcOffset9);
+            break;
+
+        case I_LDR:
+            printf("LDR R%d, R%d, #%d\n", instruction.iLdr.destinationRegister, instruction.iLdr.baseRegister, instruction.iLdr.offset6);
+            break;
+
+        case I_LEA:
+            printf("LEA R%d, #%d\n", instruction.iLea.destinationRegister, instruction.iLea.pcOffset9);
+            break;
+
+        case I_NOT:
+            printf("NOT R%d, R%d\n", instruction.iNot.destinationRegister, instruction.iNot.sourceRegister);
+            break;
+        case I_ST:
+            printf("ST R%d, #%d\n", instruction.iSt.sourceRegister, instruction.iSt.pcOffset9);
+            break;
+        case I_STI:
+            printf("STI R%d, #%d\n", instruction.iSti.sourceRegister, instruction.iSti.pcOffset9);
+            break;
+        case I_STR:
+            printf("STR R%d, R%d, #%d\n", instruction.iStr.sourceRegister, instruction.iStr.baseRegister, instruction.iStr.offset6);
+            break;
+        case I_TRAP:
+            printf("TRAP x%02X\n", instruction.iTrap.trapVector8);
+            break;
+        case M_GETC:
+            printf("GETC\n");
+            break;
+        case M_OUT:
+            printf("OUT\n");
+            break;
+        case M_PUTS:
+            printf("PUTS\n");
+            break;
+        case M_IN:
+            printf("IN\n");
+            break;
+        case M_PUTSP:   
+            printf("PUTSP\n");
+            break;
+        case M_HALT:
+            printf("HALT\n");
+            break;
+        case D_ORIG:
+            printf(".ORIG x%04X\n", instruction.dOrig.address);
+            break;
+        case D_FILL:
+            printf(".FILL #%d\n", instruction.dFill.value);
+            break;
+        case D_BLKW:
+            printf(".BLKW %d\n", instruction.dBlkw.count);
+            break;
+        case D_STRINGZ:
+            printf(".STRINGZ \"%s\"\n", instruction.dStringz.string);
+            break;
+        case D_END:
+            printf(".END\n");
+            break;
+        default:
+            printf("Unknown instruction type: %d\n", instruction.type);
+            exit(1);
+            break;
+    }
 }
 
 ParsedInstructionList* createParsedInstructionList(void) {
@@ -278,6 +387,7 @@ void destroyParsedInstructionList(ParsedInstructionList* list) {
     free(list->instructions);
     free(list);
 }
+
 void addParsedInstruction(ParsedInstructionList* list, ParsedInstruction instruction) {
     if (list->count == list->capacity - 2) {
         list->capacity *= 2;
