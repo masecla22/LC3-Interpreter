@@ -73,14 +73,17 @@ int main(int argc, char** argv) {
     }
 
     LC3Context context = {input, output, randomized, seed};
-    assemble(context);
+    unsigned short* memory = assemble(context);
 
     // Close the files
     if (input != stdin) {
         fclose(input);
     }
-
     if (output != stdout) {
         fclose(output);
     }
+
+
+    // Free the memory
+    free(memory);
 }
