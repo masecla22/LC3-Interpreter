@@ -74,7 +74,7 @@ void destroyLabelledInstructionList(LabelledInstructionList* list) {
 
 void addLabelledInstruction(LabelledInstructionList* list, LabelledInstruction instruction) {
     printLabelledInstruction(instruction);
-
+    
     if (list->count == list->capacity - 2) {
         list->capacity *= 2;
         list->instructions = realloc(list->instructions, sizeof(LabelledInstruction) * list->capacity);
@@ -265,5 +265,29 @@ void printLabelledInstruction(LabelledInstruction instruction) {
     printInstruction(instruction.instruction);
 }
 
-// unsigned short lc3AssembleInstruction(ParsedInstruction instruction);
-// ParsedInstruction lc3DisassembleInstruction(unsigned short instruction);
+ParsedInstructionList* createParsedInstructionList(void) {
+    ParsedInstructionList* list = calloc(1, sizeof(ParsedInstructionList));
+    list->instructions = calloc(16, sizeof(ParsedInstruction));
+    list->count = 0;
+    list->capacity = 16;
+
+    return list;
+}
+
+void destroyParsedInstructionList(ParsedInstructionList* list) {
+    free(list->instructions);
+    free(list);
+}
+void addParsedInstruction(ParsedInstructionList* list, ParsedInstruction instruction) {
+    if (list->count == list->capacity - 2) {
+        list->capacity *= 2;
+        list->instructions = realloc(list->instructions, sizeof(ParsedInstruction) * list->capacity);
+
+        int oldCapacity = list->capacity / 2;
+        for (unsigned int i = oldCapacity; i < list->capacity; i++) {
+            list->instructions[i] = (ParsedInstruction){0};
+        }
+    }
+
+    list->instructions[list->count++] = instruction;
+}

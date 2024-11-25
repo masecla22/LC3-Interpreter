@@ -220,6 +220,7 @@ void printInstruction(UnresolvedInstruction instruction);
 
 typedef struct LabelledInstruction {
     char* label;
+    int memoryLocation;
     UnresolvedInstruction instruction;
 } LabelledInstruction;
 
@@ -234,5 +235,16 @@ typedef struct LabelledInstructionList {
 LabelledInstructionList* createLabelledInstructionList(void);
 void destroyLabelledInstructionList(LabelledInstructionList* list);
 void addLabelledInstruction(LabelledInstructionList* list, LabelledInstruction instruction);
+
+typedef struct ParsedInstructionList {
+    ParsedInstruction* instructions;
+    unsigned int count;
+    unsigned int capacity;
+} ParsedInstructionList;
+
+ParsedInstructionList* createParsedInstructionList(void);
+void destroyParsedInstructionList(ParsedInstructionList* list);
+void addParsedInstruction(ParsedInstructionList* list, ParsedInstruction instruction);
+
 
 #endif
