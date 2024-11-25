@@ -48,14 +48,14 @@ LabelledInstructionList *labelledInstructions; // List of parsed instructions
 %token R0 R1 R2 R3 R4 R5 R6 R7
 
 %{/** Tokens for LC-3 Directives */%}
-%token ORIG FILL BLKW STRINGZ END
+%token ORIG FILL BLKW END
+%token <sval> STRINGZ
 
 %{/** Tokens for LC-3 Literals */%}
 %token <ival> DECIMAL_LITERAL HEX_LITERAL
 
 %{/** Miscellaneous tokens */%}
 %token <sval> IDENTIFIER
-%token <sval> STRING_LITERAL
 
 %type <sval> Label
 
@@ -477,20 +477,12 @@ BlockDirective : BLKW Immediate
         instruction.dBlkw.count = $2;
         $$ = instruction;
       };
-StringDirective : STRINGZ STRING_LITERAL
+
+StringDirective : STRINGZ
       {
         UnresolvedInstruction instruction = {0};
         instruction.type = D_STRINGZ;
-
-        // Remove the quotes from the string
-        // -2 for the quotes, +1 for the null terminator
-        char* result = malloc(strlen($2) - 2 + 1);
-        strncpy(result, $2 + 1, strlen($2) - 2);
-
-        // Since $2 was allocated by strdup, we need to free it
-        free($2);
-
-        instruction.dStringz.string = result;
+        instruction.dStringz.string = $1;
         $$ = instruction;
       };
 EndDirective : END
@@ -559,6 +551,4 @@ void yyerror(char *msg) {
   fprintf(stderr, "%s (detected at token=", msg);
   printToken(yychar);
   fprintf(stderr, ").\n");
-
-  printf("ERRORS: 1\nREJECTED\n");
 }
