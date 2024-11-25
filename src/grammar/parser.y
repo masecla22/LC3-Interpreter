@@ -205,7 +205,7 @@ BranchBase : BR_P { $$ = 1; }
            | BR_PN { $$ = 5; }
            | BR_ZN { $$ = 6; }
            | BR_PZN { $$ = 7; };
-           | BR { $$ = 0; };
+           | BR { $$ = 7; };
 
 BranchInstruction : 
         BranchBase Label
