@@ -20,7 +20,8 @@ static void eat() {
 %}
 
 identifier [a-zA-Z_][a-zA-Z0-9_]*
-stringLiteral \"([^\\\"\\\n]|\\.)*\"
+
+stringzDirective  (?i:\.stringz)[ \t]*(\"[^\"\\\n]*\"|[^ \t\n]+)
 
 %%
 
@@ -84,7 +85,6 @@ This assembler will not enforce the order, technically making it a bit more leni
 (?i:\.orig)               { eat(); return ORIG; }
 (?i:\.fill)               { eat(); return FILL; }
 (?i:\.blkw)               { eat(); return BLKW; }
-(?i:\.stringz)            { eat(); return STRINGZ; }
 (?i:\.end)                { eat(); return END; }
 
 %{ /* LC-3 Comments */ %}
@@ -98,7 +98,33 @@ This assembler will not enforce the order, technically making it a bit more leni
 
 %{ /* LC-3 Identifiers */ %}
 {identifier}             {eat(); yylval.sval = strlen(yytext) ? strdup(yytext) : NULL; return IDENTIFIER;}
-{stringLiteral}          {eat(); yylval.sval = strlen(yytext) ? strdup(yytext) : NULL; return STRING_LITERAL;}
+{stringzDirective}          {
+  eat(); 
+
+  char* textPointer = yytext + 8; // Skip the .STRINGZ directive 
+  // Eat up all the whitespace
+  while (*textPointer == ' ' || *textPointer == '\t') {
+    textPointer++;
+  }
+
+
+  int length = strlen(textPointer);
+
+  // Check if the string is enclosed in quotes
+  if (*textPointer == '"') {
+    // Make sure last character is a quote
+    if (textPointer[length-1] == '"') {
+      textPointer[length-1] = '\0';
+    } else {
+      fprintf(stderr, "Stringz directive must be enclosed in quotes in line %d.\n", linenr);
+      exit(EXIT_SUCCESS);
+    }
+    textPointer++;
+  }
+
+  yylval.sval = strdup(textPointer);
+  return STRINGZ;
+}
 
 
 %{ /* LC-3 Special characters */ %}
