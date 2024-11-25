@@ -7,7 +7,7 @@
 
 extern LabelledInstructionList* labelledInstructions;
 
-void freelabelledInstructions() {
+void freeLabelledInstructions() {
     if (labelledInstructions == NULL) {
         return;
     }
@@ -18,7 +18,7 @@ void freelabelledInstructions() {
 
 void assemble(LC3Context ctx) {
     // Register parser cleanup
-    atexit(freelabelledInstructions);
+    atexit(freeLabelledInstructions);
 
     // Setup the lexer with the input file.
     initLexer(ctx.inputFile);
@@ -31,8 +31,9 @@ void assemble(LC3Context ctx) {
 
     // Create the memory layout
 
+
     // Free the parsed instructions
-    freelabelledInstructions();
+    freeLabelledInstructions();
 }
 
 void ensureMemoryLayoutCanBeMade(){
