@@ -5,6 +5,7 @@
 
 #include "../../lexer/lexer.h"
 #include "../../map/string_map.h"
+#include "../emulator/lc3emulator.h"
 #include "../instructions/lc3isa.h"
 
 extern LabelledInstructionList* labelledInstructions;
@@ -44,7 +45,7 @@ void ensureMemoryLayoutCanBeMade() {
     }
 }
 
-void resolveInitialMemoryLayout() {
+int resolveInitialMemoryLayout() {
     ensureMemoryLayoutCanBeMade();
 
     LabelledInstruction firstInstruction = labelledInstructions->instructions[0];
@@ -74,6 +75,8 @@ void resolveInitialMemoryLayout() {
                 break;
         }
     }
+
+    return firstInstruction.instruction.dOrig.address;
 }
 
 ParsedInstructionList* resolveReferences() {
@@ -296,8 +299,8 @@ ParsedInstructionList* resolveReferences() {
     return instrList;
 }
 
-unsigned short* createMemoryLayout(LC3Context ctx) {
-    unsigned short* memory = (unsigned short*)calloc(65536, sizeof(unsigned short));
+MemoryCell* createMemoryLayout(LC3Context ctx) {
+    MemoryCell* memory = calloc(65536, sizeof(MemoryCell));
     if (memory == NULL) {
         return NULL;
     }
@@ -307,7 +310,7 @@ unsigned short* createMemoryLayout(LC3Context ctx) {
         int seed = ctx.seed;
         srand(seed);
         for (int i = 0; i < 65536; i++) {
-            memory[i] = rand() % 65536;
+            memory[i].rawNumber = rand() % 65536;
         }
     }
 
@@ -406,99 +409,99 @@ unsigned short assembleHalt() {
     return 0xF025;
 }
 
-void assembleInstructionsIntoMemory(unsigned short* memory, ParsedInstructionList* instructionList) {
+void assembleInstructionsIntoMemory(MemoryCell* memory, ParsedInstructionList* instructionList) {
     for (unsigned int i = 0; i < instructionList->count; i++) {
         ParsedInstruction instruction = instructionList->instructions[i];
         switch (instruction.type) {
             case I_ADD:
-                memory[instruction.memoryLocation] = assembleAdd(instruction.iAdd);
+                memory[instruction.memoryLocation].rawNumber = assembleAdd(instruction.iAdd);
                 break;
             case I_AND:
-                memory[instruction.memoryLocation] = assembleAnd(instruction.iAnd);
+                memory[instruction.memoryLocation].rawNumber = assembleAnd(instruction.iAnd);
                 break;
             case I_BR:
-                memory[instruction.memoryLocation] = assembleBranch(instruction.iBr);
+                memory[instruction.memoryLocation].rawNumber = assembleBranch(instruction.iBr);
                 break;
             case I_JMP:
-                memory[instruction.memoryLocation] = assembleJump(instruction.iJmp);
+                memory[instruction.memoryLocation].rawNumber = assembleJump(instruction.iJmp);
                 break;
             case I_JSR:
-                memory[instruction.memoryLocation] = assembleJumpSubroutine(instruction.iJsr);
+                memory[instruction.memoryLocation].rawNumber = assembleJumpSubroutine(instruction.iJsr);
                 break;
             case I_JSRR:
-                memory[instruction.memoryLocation] = assembleJumpSubroutineRegister(instruction.iJsrr);
+                memory[instruction.memoryLocation].rawNumber = assembleJumpSubroutineRegister(instruction.iJsrr);
                 break;
             case I_LD:
-                memory[instruction.memoryLocation] = assembleLoad(instruction.iLd);
+                memory[instruction.memoryLocation].rawNumber = assembleLoad(instruction.iLd);
                 break;
             case I_LDI:
-                memory[instruction.memoryLocation] = assembleLoadIndirect(instruction.iLdi);
+                memory[instruction.memoryLocation].rawNumber = assembleLoadIndirect(instruction.iLdi);
                 break;
             case I_LDR:
-                memory[instruction.memoryLocation] = assembleLoadBaseOffset(instruction.iLdr);
+                memory[instruction.memoryLocation].rawNumber = assembleLoadBaseOffset(instruction.iLdr);
                 break;
             case I_LEA:
-                memory[instruction.memoryLocation] = assembleLoadEffectiveAddress(instruction.iLea);
+                memory[instruction.memoryLocation].rawNumber = assembleLoadEffectiveAddress(instruction.iLea);
                 break;
             case I_NOT:
-                memory[instruction.memoryLocation] = assembleNot(instruction.iNot);
+                memory[instruction.memoryLocation].rawNumber = assembleNot(instruction.iNot);
                 break;
             case I_RET:
-                memory[instruction.memoryLocation] = assembleRet();
+                memory[instruction.memoryLocation].rawNumber = assembleRet();
                 break;
             case I_RTI:
-                memory[instruction.memoryLocation] = assembleRti();
+                memory[instruction.memoryLocation].rawNumber = assembleRti();
                 break;
             case I_ST:
-                memory[instruction.memoryLocation] = assembleStore(instruction.iSt);
+                memory[instruction.memoryLocation].rawNumber = assembleStore(instruction.iSt);
                 break;
             case I_STI:
-                memory[instruction.memoryLocation] = assembleStoreIndirect(instruction.iSti);
+                memory[instruction.memoryLocation].rawNumber = assembleStoreIndirect(instruction.iSti);
                 break;
             case I_STR:
-                memory[instruction.memoryLocation] = assembleStoreBaseOffset(instruction.iStr);
+                memory[instruction.memoryLocation].rawNumber = assembleStoreBaseOffset(instruction.iStr);
                 break;
             case I_TRAP:
-                memory[instruction.memoryLocation] = assembleTrap(instruction.iTrap);
+                memory[instruction.memoryLocation].rawNumber = assembleTrap(instruction.iTrap);
                 break;
             case M_GETC:
-                memory[instruction.memoryLocation] = assembleGetc();
+                memory[instruction.memoryLocation].rawNumber = assembleGetc();
                 break;
             case M_OUT:
-                memory[instruction.memoryLocation] = assembleOut();
+                memory[instruction.memoryLocation].rawNumber = assembleOut();
                 break;
             case M_PUTS:
-                memory[instruction.memoryLocation] = assemblePuts();
+                memory[instruction.memoryLocation].rawNumber = assemblePuts();
                 break;
             case M_IN:
-                memory[instruction.memoryLocation] = assembleIn();
+                memory[instruction.memoryLocation].rawNumber = assembleIn();
                 break;
             case M_PUTSP:
-                memory[instruction.memoryLocation] = assemblePutsp();
+                memory[instruction.memoryLocation].rawNumber = assemblePutsp();
                 break;
             case M_HALT:
-                memory[instruction.memoryLocation] = assembleHalt();
+                memory[instruction.memoryLocation].rawNumber = assembleHalt();
                 break;
             case D_ORIG:
                 break;
             case D_FILL:
-                memory[instruction.memoryLocation] = instruction.dFill.value;
+                memory[instruction.memoryLocation].rawNumber = instruction.dFill.value;
                 break;
             case D_BLKW:
                 for (unsigned int j = 0; j < instruction.dBlkw.count; j++) {
-                    memory[instruction.memoryLocation + j] = 0;
+                    memory[instruction.memoryLocation + j].rawNumber = 0;
                 }
                 break;
             case D_STRINGZ:
                 for (unsigned int j = 0; j < strlen(instruction.dStringz.string); j++) {
-                    memory[instruction.memoryLocation + j] = instruction.dStringz.string[j];
+                    memory[instruction.memoryLocation + j].rawNumber = instruction.dStringz.string[j];
                 }
                 // Add the null terminator
-                memory[instruction.memoryLocation + strlen(instruction.dStringz.string)] = 0;
-                
+                memory[instruction.memoryLocation + strlen(instruction.dStringz.string)].rawNumber = 0;
+
                 // Since we're done with this string we can free it
                 free(instruction.dStringz.string);
-                
+
                 break;
             case D_END:
                 break;
@@ -510,7 +513,25 @@ void assembleInstructionsIntoMemory(unsigned short* memory, ParsedInstructionLis
     }
 }
 
-unsigned short* assemble(LC3Context ctx) {
+LC3EmulatorState prepareEmulatorState(LC3Context ctx, MemoryCell* memory, int initialPc) {
+    LC3EmulatorState emulatorState = {0};
+
+    emulatorState.cc = 2;
+    emulatorState.haltSignal = 0;
+    emulatorState.memory = memory;
+    emulatorState.pc = initialPc;
+
+    if (ctx.randomized) {
+        // Set registers to random values
+        for (int i = 0; i < 8; i++) {
+            emulatorState.registers[i] = rand() % 65536;
+        }
+    }
+
+    return emulatorState;
+}
+
+LC3EmulatorState assemble(LC3Context ctx) {
     // Register parser cleanup
     atexit(freeLabelledInstructions);
 
@@ -524,16 +545,19 @@ unsigned short* assemble(LC3Context ctx) {
     finalizeLexer();
 
     // Resolve the initial memory layout
-    resolveInitialMemoryLayout();
+    int initialPc = resolveInitialMemoryLayout();
 
     // Resolve labels
     ParsedInstructionList* parsed = resolveReferences();
-    unsigned short* memory = createMemoryLayout(ctx);
+    MemoryCell* memory = createMemoryLayout(ctx);
 
-    // Assemble the parsed instructions into the memor
+    // Assemble the parsed instructions into the memory
     assembleInstructionsIntoMemory(memory, parsed);
 
     // Free the parsed instructions
     destroyParsedInstructionList(parsed);
-    return memory;
+
+    LC3EmulatorState emulatorState = prepareEmulatorState(ctx, memory, initialPc);
+
+    return emulatorState;
 }

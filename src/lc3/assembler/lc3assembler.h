@@ -3,7 +3,8 @@
 
 #include "../instructions/lc3isa.h"
 #include "../context/lc3context.h"
+#include "../emulator/lc3emulator.h"
 
-unsigned short* assemble(LC3Context ctx);
+LC3EmulatorState assemble(LC3Context ctx);
 
 #endif // LC3_ASSEMBLER_H
