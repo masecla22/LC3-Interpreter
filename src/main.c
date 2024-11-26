@@ -3,8 +3,9 @@
 #include <string.h>
 
 #include "cli/default/default_cli.h"
-#include "lc3/context/lc3context.h"
 #include "lc3/assembler/lc3assembler.h"
+#include "lc3/context/lc3context.h"
+#include "lc3/emulator/lc3emulator.h"
 
 CLIParser* parser = NULL;
 CLIParseResult result = {NULL};
@@ -73,8 +74,11 @@ int main(int argc, char** argv) {
     }
 
     LC3Context context = {input, output, randomized, seed};
-    unsigned short* memory = assemble(context);
+    LC3EmulatorState emulatorState = assemble(context);
 
+    // Run the emulator
+    emulate(context, emulatorState);
+    
     // Close the files
     if (input != stdin) {
         fclose(input);
@@ -85,5 +89,5 @@ int main(int argc, char** argv) {
 
 
     // Free the memory
-    free(memory);
+    free(emulatorState.memory);
 }
