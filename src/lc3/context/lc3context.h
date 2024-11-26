@@ -11,5 +11,4 @@ typedef struct LC3Context {
     int seed;
 } LC3Context;
 
-
 #endif // LC3_CONTEXT_H
