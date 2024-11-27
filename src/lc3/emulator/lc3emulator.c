@@ -120,13 +120,17 @@ static inline void stepSt(LC3EmulatorState *state, unsigned short instruction) {
 }
 
 static inline void stepJsrJsrr(LC3EmulatorState *state, unsigned short instruction) {
-    // unsigned short pc = state->pc;
-    // state->pc += instruction->jsr.pcOffset11;
-    // state->registers[7] = pc;
+    unsigned short isJsr = getRaw(instruction, 11, 1);
 
-    unsigned short pc = state->pc;
-    state->pc += getAsNumber(instruction, 0, 11);
-    state->registers[7] = pc;
+    if (isJsr) {
+        short pcOffset11 = getAsNumber(instruction, 0, 11);
+        state->registers[7] = state->pc;
+        state->pc += pcOffset11;
+    } else {
+        unsigned short baseRegister = getRaw(instruction, 6, 3);
+        state->registers[7] = state->pc;
+        state->pc = state->registers[baseRegister];
+    } 
 }
 static inline void stepAnd(LC3EmulatorState *state, unsigned short instruction) {
     // short sr1 = state->registers[instruction->add_and.sr1];
