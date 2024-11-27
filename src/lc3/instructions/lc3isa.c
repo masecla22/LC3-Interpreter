@@ -187,14 +187,17 @@ void printUnresolvedInstruction(UnresolvedInstruction instruction) {
             break;
 
         case D_FILL: {
-            int signedValue = instruction.dFill.value;
-            if (signedValue < 256 && signedValue > -256) {
-                printf(".FILL #%d\n", signedValue);
-                break;
+            if (instruction.dFill.isResolved) {
+                int signedValue = instruction.dFill.value;
+                if (signedValue < 256 && signedValue > -256) {
+                    printf(".FILL #%d\n", signedValue);
+                } else {
+                    printf(".FILL x%04X\n", instruction.dFill.value);
+                }
             } else {
-                printf(".FILL x%04X\n", instruction.dFill.value);
-                break;
+                printf(".FILL %s\n", instruction.dFill.label);
             }
+            break;
         }
         case D_BLKW:
             printf(".BLKW %d\n", instruction.dBlkw.count);
@@ -346,7 +349,7 @@ void printParsedInstruction(ParsedInstruction instruction) {
         case M_IN:
             printf("IN\n");
             break;
-        case M_PUTSP:   
+        case M_PUTSP:
             printf("PUTSP\n");
             break;
         case M_HALT:
