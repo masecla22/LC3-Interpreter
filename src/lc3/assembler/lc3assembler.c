@@ -339,11 +339,11 @@ unsigned short assembleJump(JumpInstruction instruction) {
 }
 
 unsigned short assembleJumpSubroutine(JumpSubroutineInstruction instruction) {
-    return (4 << 12) | (instruction.pcOffset11 & 0x7FF);
+    return (4 << 12) | (1 << 11) | (instruction.pcOffset11 & 0x7FF);
 }
 
 unsigned short assembleJumpSubroutineRegister(JumpSubroutineRegisterInstruction instruction) {
-    return (4 << 12) | (1 << 11) | (instruction.baseRegister << 6);
+    return (4 << 12) | (instruction.baseRegister << 6);
 }
 
 unsigned short assembleLoad(LoadInstruction instruction) {
