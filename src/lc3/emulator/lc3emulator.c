@@ -92,7 +92,9 @@ static inline void stepAdd(LC3EmulatorState *state, unsigned short instruction) 
     // state->cc = result == 0 ? 2 : result < 0 ? 4 : 1;
 
     short sr1 = state->registers[getRaw(instruction, 6, 3)];
-    short sr2 = instruction & (1 << 5) ? getAsNumber(instruction, 0, 5) : state->registers[getRaw(instruction, 0, 3)];
+    short sr2 = instruction & (1 << 5) ? 
+        getAsNumber(instruction, 0, 5) : 
+        state->registers[getRaw(instruction, 0, 3)];
     short result = sr1 + sr2;
 
     state->registers[getRaw(instruction, 9, 3)] = result;
@@ -177,10 +179,12 @@ static inline void stepStr(LC3EmulatorState *state, unsigned short instruction) 
 
     state->memory[address].parsedNumber = state->registers[getRaw(instruction, 9, 3)];
 }
+
 static inline void stepRti(LC3EmulatorState *state, unsigned short instruction) {
     fprintf(stderr, "RTI encountered!\n");
     exit(1);
 }
+
 static inline void stepNot(LC3EmulatorState *state, unsigned short instruction) {
     // short source = state->registers[instruction->not.sourceRegister];
     // short result = ~source;
@@ -197,6 +201,7 @@ static inline void stepNot(LC3EmulatorState *state, unsigned short instruction) 
     state->cc = result == 0 ? 2 : result < 0 ? 4
                                              : 1;
 }
+
 static inline void stepLdi(LC3EmulatorState *state, unsigned short instruction) {
     // unsigned short address = state->pc + instruction->ld_ldi_lea.pcOffset9;
     // unsigned short indirectAddress = state->memory[address].parsedNumber;
@@ -416,6 +421,12 @@ void step(LC3Context *ctx, LC3EmulatorState *state) {
 
     unsigned short instruction = state->memory[pc].rawNumber;
     unsigned short opcode = getRaw(instruction, 12, 4);
+
+    if(instruction == 0)
+    {
+        printf("sus\n");
+        exit(1);
+    }
 
 
     switch (opcode) {
