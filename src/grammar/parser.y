@@ -113,11 +113,12 @@ Program : {
             // Initialize the list of parsed instructions
             labelledInstructions = createLabelledInstructionList();
           } 
-          Statements;
+          Statements Labels;
 
 Statements : Statement | Statements Statement;
 
-Labels : Label { $$ = $1; }
+Labels : 
+  %empty { $$ = NULL; }
   | Labels Label { $$ = $2; };
 
 Statement : Labels Instruction {
@@ -125,14 +126,7 @@ Statement : Labels Instruction {
               labelledInstruction.label = $1;
               labelledInstruction.instruction = $2;
               addLabelledInstruction(labelledInstructions, labelledInstruction);
-            }
-          | Instruction 
-          {
-            LabelledInstruction labelledInstruction = {0};
-            labelledInstruction.label = NULL;
-            labelledInstruction.instruction = $1;
-            addLabelledInstruction(labelledInstructions, labelledInstruction);
-          };
+            };
 
 Instruction : AddInstruction | AndInstruction 
               | BranchInstruction 
