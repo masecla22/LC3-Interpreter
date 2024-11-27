@@ -267,7 +267,12 @@ ParsedInstructionList* resolveReferences() {
                 break;
             case D_FILL:
                 parsedInstruction.type = D_FILL;
-                parsedInstruction.dFill = instruction.instruction.dFill;
+                if (instruction.instruction.dFill.isResolved) {
+                    parsedInstruction.dFill.value = instruction.instruction.dFill.value;
+                } else {
+                    int target = (int)(long)stringMapGet(labelMap, instruction.instruction.dFill.label);
+                    parsedInstruction.dFill.value = target;
+                }
                 break;
             case D_BLKW:
                 parsedInstruction.type = D_BLKW;
