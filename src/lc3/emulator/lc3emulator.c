@@ -188,10 +188,12 @@ static inline void stepNot(LC3EmulatorState *state, unsigned short instruction) 
     // state->registers[instruction->not.destinationRegister] = result;
     // state->cc = result == 0 ? 2 : result < 0 ? 4 : 1;
 
-    short source = state->registers[getRaw(instruction, 0, 3)];
-    short result = ~source;
+    short destination = getRaw(instruction, 9, 3);
+    short source = state->registers[getRaw(instruction, 6, 3)];
 
-    state->registers[getRaw(instruction, 3, 3)] = result;
+    short result = ~source;
+    state->registers[destination] = result;
+
     state->cc = result == 0 ? 2 : result < 0 ? 4
                                              : 1;
 }
