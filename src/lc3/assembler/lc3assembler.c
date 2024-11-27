@@ -93,7 +93,7 @@ ParsedInstructionList* resolveReferences() {
                 instruction.label[j] = tolower(instruction.label[j]);
             }
 
-            stringMapPut(labelMap, instruction.label, (void*)(long)(instruction.memoryLocation - 1));
+            stringMapPut(labelMap, instruction.label, (void*)(long)(instruction.memoryLocation));
         }
     }
 
@@ -179,7 +179,7 @@ ParsedInstructionList* resolveReferences() {
                         instruction.instruction.iBr.label[j] = tolower(instruction.instruction.iBr.label[j]);
                     }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iBr.label);
-                    parsedInstruction.iBr.pcOffset9 = target - currentAddress;
+                    parsedInstruction.iBr.pcOffset9 = target - currentAddress - 1;
                 }
                 break;
             case I_JMP:
@@ -196,7 +196,7 @@ ParsedInstructionList* resolveReferences() {
                         instruction.instruction.iJsr.label[j] = tolower(instruction.instruction.iJsr.label[j]);
                     }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iJsr.label);
-                    parsedInstruction.iJsr.pcOffset11 = target - currentAddress;
+                    parsedInstruction.iJsr.pcOffset11 = target - currentAddress - 1;
                 }
                 break;
             case I_JSRR:
@@ -214,7 +214,7 @@ ParsedInstructionList* resolveReferences() {
                         instruction.instruction.iLd.label[j] = tolower(instruction.instruction.iLd.label[j]);
                     }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iLd.label);
-                    parsedInstruction.iLd.pcOffset9 = target - currentAddress;
+                    parsedInstruction.iLd.pcOffset9 = target - currentAddress - 1;
                 }
                 break;
             case I_LDI:
@@ -228,7 +228,7 @@ ParsedInstructionList* resolveReferences() {
                         instruction.instruction.iLdi.label[j] = tolower(instruction.instruction.iLdi.label[j]);
                     }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iLdi.label);
-                    parsedInstruction.iLdi.pcOffset9 = target - currentAddress;
+                    parsedInstruction.iLdi.pcOffset9 = target - currentAddress - 1;
                 }
                 break;
             case I_LDR:
@@ -246,7 +246,7 @@ ParsedInstructionList* resolveReferences() {
                         instruction.instruction.iLea.label[j] = tolower(instruction.instruction.iLea.label[j]);
                     }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iLea.label);
-                    parsedInstruction.iLea.pcOffset9 = target - currentAddress;
+                    parsedInstruction.iLea.pcOffset9 = target - currentAddress - 1;
                 }
                 break;
             case I_NOT:
@@ -268,7 +268,7 @@ ParsedInstructionList* resolveReferences() {
                         instruction.instruction.iSt.label[j] = tolower(instruction.instruction.iSt.label[j]);
                     }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iSt.label);
-                    parsedInstruction.iSt.pcOffset9 = target - currentAddress;
+                    parsedInstruction.iSt.pcOffset9 = target - currentAddress - 1;
                 }
                 break;
             case I_STI:
@@ -282,7 +282,7 @@ ParsedInstructionList* resolveReferences() {
                         instruction.instruction.iSti.label[j] = tolower(instruction.instruction.iSti.label[j]);
                     }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iSti.label);
-                    parsedInstruction.iSti.pcOffset9 = target - currentAddress;
+                    parsedInstruction.iSti.pcOffset9 = target - currentAddress - 1;
                 }
                 break;
             case I_STR:
