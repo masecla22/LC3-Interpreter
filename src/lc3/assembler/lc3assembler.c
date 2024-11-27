@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "../../lexer/lexer.h"
 #include "../../map/string_map.h"
@@ -86,6 +87,11 @@ ParsedInstructionList* resolveReferences() {
     for (unsigned int i = 0; i < labelledInstructions->count; i++) {
         LabelledInstruction instruction = labelledInstructions->instructions[i];
         if (instruction.label != NULL) {
+            // Make the label lowercase
+            for (unsigned int j = 0; j < strlen(instruction.label); j++) {
+                instruction.label[j] = tolower(instruction.label[j]);
+            }
+
             stringMapPut(labelMap, instruction.label, (void*)(long)(instruction.memoryLocation - 1));
         }
     }
@@ -129,6 +135,11 @@ ParsedInstructionList* resolveReferences() {
         }
 
         if (labelNeedingChecking != NULL) {
+            // Make the label lowercase
+            for (unsigned int j = 0; j < strlen(labelNeedingChecking); j++) {
+                labelNeedingChecking[j] = tolower(labelNeedingChecking[j]);
+            }
+
             // Check if the label is in the map
             void* result = stringMapGet(labelMap, labelNeedingChecking);
             if (result == NULL) {
@@ -162,6 +173,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.iBr.isResolved) {
                     parsedInstruction.iBr.pcOffset9 = instruction.instruction.iBr.pcOffset9;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.iBr.label); j++) {
+                        instruction.instruction.iBr.label[j] = tolower(instruction.instruction.iBr.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iBr.label);
                     parsedInstruction.iBr.pcOffset9 = target - currentAddress;
                 }
@@ -175,6 +190,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.iJsr.isResolved) {
                     parsedInstruction.iJsr.pcOffset11 = instruction.instruction.iJsr.pcOffset11;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.iJsr.label); j++) {
+                        instruction.instruction.iJsr.label[j] = tolower(instruction.instruction.iJsr.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iJsr.label);
                     parsedInstruction.iJsr.pcOffset11 = target - currentAddress;
                 }
@@ -189,6 +208,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.iLd.isResolved) {
                     parsedInstruction.iLd.pcOffset9 = instruction.instruction.iLd.pcOffset9;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.iLd.label); j++) {
+                        instruction.instruction.iLd.label[j] = tolower(instruction.instruction.iLd.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iLd.label);
                     parsedInstruction.iLd.pcOffset9 = target - currentAddress;
                 }
@@ -199,6 +222,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.iLdi.isResolved) {
                     parsedInstruction.iLdi.pcOffset9 = instruction.instruction.iLdi.pcOffset9;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.iLdi.label); j++) {
+                        instruction.instruction.iLdi.label[j] = tolower(instruction.instruction.iLdi.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iLdi.label);
                     parsedInstruction.iLdi.pcOffset9 = target - currentAddress;
                 }
@@ -213,6 +240,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.iLea.isResolved) {
                     parsedInstruction.iLea.pcOffset9 = instruction.instruction.iLea.pcOffset9;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.iLea.label); j++) {
+                        instruction.instruction.iLea.label[j] = tolower(instruction.instruction.iLea.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iLea.label);
                     parsedInstruction.iLea.pcOffset9 = target - currentAddress;
                 }
@@ -231,6 +262,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.iSt.isResolved) {
                     parsedInstruction.iSt.pcOffset9 = instruction.instruction.iSt.pcOffset9;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.iSt.label); j++) {
+                        instruction.instruction.iSt.label[j] = tolower(instruction.instruction.iSt.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iSt.label);
                     parsedInstruction.iSt.pcOffset9 = target - currentAddress;
                 }
@@ -241,6 +276,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.iSti.isResolved) {
                     parsedInstruction.iSti.pcOffset9 = instruction.instruction.iSti.pcOffset9;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.iSti.label); j++) {
+                        instruction.instruction.iSti.label[j] = tolower(instruction.instruction.iSti.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.iSti.label);
                     parsedInstruction.iSti.pcOffset9 = target - currentAddress;
                 }
@@ -270,6 +309,10 @@ ParsedInstructionList* resolveReferences() {
                 if (instruction.instruction.dFill.isResolved) {
                     parsedInstruction.dFill.value = instruction.instruction.dFill.value;
                 } else {
+                    // Make the label lowercase
+                    for (unsigned int j = 0; j < strlen(instruction.instruction.dFill.label); j++) {
+                        instruction.instruction.dFill.label[j] = tolower(instruction.instruction.dFill.label[j]);
+                    }
                     int target = (int)(long)stringMapGet(labelMap, instruction.instruction.dFill.label);
                     parsedInstruction.dFill.value = target;
                 }
