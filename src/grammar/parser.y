@@ -127,7 +127,7 @@ Statement : Label Instruction {
             labelledInstruction.label = NULL;
             labelledInstruction.instruction = $1;
             addLabelledInstruction(labelledInstructions, labelledInstruction);
-          };
+          } | Label;
 
 Instruction : AddInstruction | AndInstruction 
               | BranchInstruction 
