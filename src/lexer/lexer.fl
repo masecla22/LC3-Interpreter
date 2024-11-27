@@ -97,16 +97,30 @@ This assembler will not enforce the order, technically making it a bit more leni
 (#)?(-)?[0-9]+                  {eat(); yylval.ival = strtol(yytext+(yytext[0]=='#'), NULL, 10); return DECIMAL_LITERAL;}
 
 %{ /* LC-3 Identifiers */ %}
-{identifier}             {eat(); yylval.sval = strlen(yytext) ? strdup(yytext) : NULL; return IDENTIFIER;}
+{identifier}             {
+  eat(); 
+  yylval.sval = strlen(yytext) ? strdup(yytext) : NULL; 
+  if(yylval.sval != NULL){
+    // If it ends in : , remove the colon
+    if(yylval.sval[strlen(yylval.sval)-1] == ':'){
+      yylval.sval[strlen(yylval.sval)-1] = '\0';
+    }
+  }
+
+  return IDENTIFIER;
+}
 {stringzDirective}          {
   eat(); 
 
   char* textPointer = yytext + 8; // Skip the .STRINGZ directive 
   // Eat up all the whitespace
-  while (*textPointer == ' ' || *textPointer == '\t') {
+  while (*textPointer == ' ' || *textPointer == '\t' || *textPointer == '\n' || *textPointer == '\r') {
     textPointer++;
   }
 
+  // Eat up all the whitespace at the end
+  while (textPointer[strlen(textPointer)-1] == ' ' || textPointer[strlen(textPointer)-1] == '\t' || textPointer[strlen(textPointer)-1] == '\n' || textPointer[strlen(textPointer)-1] == '\r') {
+    textPointer[strlen(textPointer)-1] = '\0';
   }
 
 
@@ -118,7 +132,7 @@ This assembler will not enforce the order, technically making it a bit more leni
     if (textPointer[length-1] == '"') {
       textPointer[length-1] = '\0';
     } else {
-      fprintf(stderr, "Stringz directive must be enclosed in quotes in line %d.\n", linenr);
+      fprintf(stderr, "Stringz directive must be enclosed in quotes in line %d. Actual character: '%c'\n", linenr, textPointer[length-1]);
       exit(1);
     }
     textPointer++;
