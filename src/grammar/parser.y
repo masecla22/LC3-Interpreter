@@ -58,6 +58,7 @@ LabelledInstructionList *labelledInstructions; // List of parsed instructions
 %token <sval> IDENTIFIER
 
 %type <sval> Label
+%type <sval> Labels
 
 %type <ival> Register
 %type <ival> Immediate
@@ -115,7 +116,11 @@ Program : {
           Statements;
 
 Statements : Statement | Statements Statement;
-Statement : Label Instruction {
+
+Labels : Label { $$ = $1; }
+  | Labels Label { $$ = $2; };
+
+Statement : Labels Instruction {
               LabelledInstruction labelledInstruction = {0};
               labelledInstruction.label = $1;
               labelledInstruction.instruction = $2;
@@ -127,7 +132,7 @@ Statement : Label Instruction {
             labelledInstruction.label = NULL;
             labelledInstruction.instruction = $1;
             addLabelledInstruction(labelledInstructions, labelledInstruction);
-          } | Label;
+          };
 
 Instruction : AddInstruction | AndInstruction 
               | BranchInstruction 
