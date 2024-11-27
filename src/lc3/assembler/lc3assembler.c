@@ -1,8 +1,8 @@
 #include "lc3assembler.h"
 
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include "../../lexer/lexer.h"
 #include "../../map/string_map.h"
@@ -59,6 +59,7 @@ int resolveInitialMemoryLayout() {
 
         switch (instruction->instruction.type) {
             case D_ORIG:
+                addr = instruction->instruction.dOrig.address;
                 break;
             case D_BLKW:
                 instruction->memoryLocation = addr;
@@ -540,18 +541,17 @@ void assembleInstructionsIntoMemory(MemoryCell* memory, ParsedInstructionList* i
                     memory[instruction.memoryLocation + j].rawNumber = 0;
                 }
                 break;
-            case D_STRINGZ:
-            {
+            case D_STRINGZ: {
                 unsigned int len = strlen(instruction.dStringz.string);
                 for (unsigned int j = 0; j < len; j++) {
                     char c = instruction.dStringz.string[j];
 
-                    if(c == '\\' && j < len -1) {
-                        char c1 = instruction.dStringz.string[j+1];
-                        if(c1 == 'n') {
+                    if (c == '\\' && j < len - 1) {
+                        char c1 = instruction.dStringz.string[j + 1];
+                        if (c1 == 'n') {
                             memory[instruction.memoryLocation + j].rawNumber = '\n';
                             j++;
-                        } else if(c1 == 't') {
+                        } else if (c1 == 't') {
                             memory[instruction.memoryLocation + j].rawNumber = '\t';
                             j++;
                         } else {
@@ -560,7 +560,6 @@ void assembleInstructionsIntoMemory(MemoryCell* memory, ParsedInstructionList* i
                     } else {
                         memory[instruction.memoryLocation + j].rawNumber = instruction.dStringz.string[j];
                     }
-
                 }
                 // Add the null terminator
                 memory[instruction.memoryLocation + strlen(instruction.dStringz.string)].rawNumber = 0;
