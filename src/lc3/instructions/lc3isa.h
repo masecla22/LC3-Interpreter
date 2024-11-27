@@ -155,6 +155,14 @@ typedef struct FillDirective {
     unsigned int value;
 } FillDirective;
 
+typedef struct UnresolvedFillDirective {
+    int isResolved;
+    union {
+        unsigned int value;
+        char* label;
+    };
+} UnresolvedFillDirective;
+
 typedef struct BlkwDirective {
     unsigned int count;
 } BlkwDirective;
@@ -227,7 +235,7 @@ typedef struct UnresolvedInstruction {
         // Macros are not in the union because they don't have any fields
 
         OrigDirective dOrig;
-        FillDirective dFill;
+        UnresolvedFillDirective dFill;
         BlkwDirective dBlkw;
         StringzDirective dStringz;
 
