@@ -89,7 +89,7 @@ This assembler will not enforce the order, technically making it a bit more leni
 
 %{ /* LC-3 Comments */ %}
 ;[^\n]*                   { eat(); /* eat comment */  }
-[ \t]+                   { eat(); /* whitespace */   }
+[ \t\r]+                   { eat(); /* whitespace */   }
 \n                       { linenr++; colnr = 1; }
 
 %{ /* LC-3 Literals */ %}
