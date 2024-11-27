@@ -282,28 +282,135 @@ static inline void stepTrap(LC3EmulatorState *state, unsigned short instruction)
     }
 }
 
+void printHexInstruction(unsigned short instruction) {
+    unsigned short opcode = getRaw(instruction, 12, 4);
+    unsigned short dr = getRaw(instruction, 9, 3);
+    unsigned short sr1 = getRaw(instruction, 6, 3);
+    unsigned short sr2 = getRaw(instruction, 0, 3);
+    unsigned short imm5 = getAsNumber(instruction, 0, 5);
+    unsigned short nzp = getRaw(instruction, 9, 3);
+    short pcOffset9 = getAsNumber(instruction, 0, 9);
+    unsigned short baseRegister = getRaw(instruction, 6, 3);
+    unsigned short offset6 = getAsNumber(instruction, 0, 6);
+    unsigned short trapVector = getAsNumber(instruction, 0, 8);
+    unsigned short pcOffset11 = getAsNumber(instruction, 0, 11);
+
+    switch (opcode) {
+        case 0:
+            printf("BR");
+            if (nzp & 4) printf("n");
+            if (nzp & 2) printf("z");
+            if (nzp & 1) printf("p");
+            printf(" #%d", pcOffset9);
+            break;
+        case 1:
+            printf("ADD R%d, R%d, ", dr, sr1);
+            if (instruction & (1 << 5)) {
+                printf("#%d", imm5);
+            } else {
+                printf("R%d", sr2);
+            }
+            break;
+        case 2:
+            printf("LD R%d, %d", dr, pcOffset9);
+            break;
+        case 3:
+            printf("ST R%d, %d", dr, pcOffset9);
+            break;
+        case 4:
+            if (instruction & (1 << 11)) {
+                printf("JSR %d", pcOffset11);
+            } else {
+                printf("JSRR R%d", baseRegister);
+            }
+            break;
+        case 5:
+            printf("AND R%d, R%d, ", dr, sr1);
+            if (instruction & (1 << 5)) {
+                printf("#%d", imm5);
+            } else {
+                printf("R%d", sr2);
+            }
+            break;
+        case 6:
+            printf("LDR R%d, R%d, %d", dr, baseRegister, offset6);
+            break;
+        case 7:
+            printf("STR R%d, R%d, %d", sr1, baseRegister, offset6);
+            break;
+        case 8:
+            printf("RTI");
+            break;
+        case 9:
+            printf("NOT R%d, R%d", dr, sr1);
+            break;
+        case 10:
+            printf("LDI R%d, %d", dr, pcOffset9);
+            break;
+        case 11:
+            printf("STI R%d, %d", sr1, pcOffset9);
+            break;
+        case 12:
+            printf("JMP R%d", baseRegister);
+            break;
+        case 13:
+            printf("RESERVED");
+            break;
+        case 14:
+            printf("LEA R%d, %d", dr, pcOffset9);
+            break;
+        case 15:
+            switch (trapVector) {
+                case 0x20:
+                    printf("GETC");
+                    break;
+                case 0x21:
+                    printf("OUT");
+                    break;
+                case 0x22:
+                    printf("PUTS");
+                    break;
+                case 0x23:
+                    printf("IN");
+                    break;
+                case 0x24:
+                    printf("PUTSP");
+                    break;
+                case 0x25:
+                    printf("HALT");
+                    break;
+            }
+            break;
+    }
+
+}
+
 void printState(LC3EmulatorState *state) {
-    printf("PC: %d ", state->pc);
+    printf("PC: x%4x ", state->pc);
     printf("CC: %d ", state->cc);
 
     for (int i = 0; i < 8; i++) {
         if (state->registers[i] > 1000) {
             printf("R%d: x%4x ", i, state->registers[i]);
         } else {
-            printf("R%d: %d ", i, state->registers[i]);
+            printf("R%d: %5d ", i, state->registers[i]);
         }
     }
-    printf("\n");
+
+    printf(" -> ISTR: ");
+    printHexInstruction(state->memory[state->pc].rawNumber);
+    printf(" (x%04x)\n", state->memory[state->pc].rawNumber);
 }
 
 void step(LC3Context *ctx, LC3EmulatorState *state) {
     unsigned short pc = state->pc;
+    // printState(state);
+
     state->pc++;
 
     unsigned short instruction = state->memory[pc].rawNumber;
     unsigned short opcode = getRaw(instruction, 12, 4);
 
-    printState(state);
 
     switch (opcode) {
         case 0:
