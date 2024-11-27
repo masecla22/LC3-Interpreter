@@ -21,7 +21,7 @@ static void eat() {
 
 identifier [a-zA-Z_][a-zA-Z0-9_]*
 
-stringzDirective  (?i:\.stringz)[ \t]*(\"[^\"\\\n]*\"|[^ \t\n]+)
+stringzDirective  (?i:\.stringz)[ \t]*(\"[^\"\n]*\"|[^ \t\n]+)
 
 %%
 
