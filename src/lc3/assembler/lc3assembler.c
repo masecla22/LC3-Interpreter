@@ -541,8 +541,26 @@ void assembleInstructionsIntoMemory(MemoryCell* memory, ParsedInstructionList* i
                 }
                 break;
             case D_STRINGZ:
-                for (unsigned int j = 0; j < strlen(instruction.dStringz.string); j++) {
-                    memory[instruction.memoryLocation + j].rawNumber = instruction.dStringz.string[j];
+            {
+                unsigned int len = strlen(instruction.dStringz.string);
+                for (unsigned int j = 0; j < len; j++) {
+                    char c = instruction.dStringz.string[j];
+
+                    if(c == '\\' && j < len -1) {
+                        char c1 = instruction.dStringz.string[j+1];
+                        if(c1 == 'n') {
+                            memory[instruction.memoryLocation + j].rawNumber = '\n';
+                            j++;
+                        } else if(c1 == 't') {
+                            memory[instruction.memoryLocation + j].rawNumber = '\t';
+                            j++;
+                        } else {
+                            memory[instruction.memoryLocation + j].rawNumber = instruction.dStringz.string[j];
+                        }
+                    } else {
+                        memory[instruction.memoryLocation + j].rawNumber = instruction.dStringz.string[j];
+                    }
+
                 }
                 // Add the null terminator
                 memory[instruction.memoryLocation + strlen(instruction.dStringz.string)].rawNumber = 0;
@@ -551,6 +569,7 @@ void assembleInstructionsIntoMemory(MemoryCell* memory, ParsedInstructionList* i
                 free(instruction.dStringz.string);
 
                 break;
+            }
             case D_END:
                 break;
             default:
