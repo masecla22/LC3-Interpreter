@@ -33,6 +33,8 @@ LabelledInstructionList *labelledInstructions; // List of parsed instructions
 
     UnresolvedInstruction instruction;
     LabelledInstruction labelledInstruction;
+
+    Labels *labels;
 }
 
 %{/** Tokens for LC-3 Base instructions */%}
@@ -58,7 +60,8 @@ LabelledInstructionList *labelledInstructions; // List of parsed instructions
 %token <sval> IDENTIFIER
 
 %type <sval> Label
-%type <sval> Labels
+
+%type <labels> Labels
 
 %type <ival> Register
 %type <ival> Immediate
@@ -118,12 +121,12 @@ Program : {
 Statements : Statement | Statements Statement;
 
 Labels : 
-  %empty { $$ = NULL; }
-  | Labels Label { $$ = $2; };
+  %empty { $$ = createLabels(); }
+  | Labels Label { addLabel($1, $2); };
 
 Statement : Labels Instruction {
               LabelledInstruction labelledInstruction = {0};
-              labelledInstruction.label = $1;
+              labelledInstruction.labels = $1;
               labelledInstruction.instruction = $2;
               addLabelledInstruction(labelledInstructions, labelledInstruction);
             };

@@ -483,7 +483,7 @@ void step(LC3Context *ctx, LC3EmulatorState *state) {
 
 void emulate(LC3Context ctx, LC3EmulatorState state) {
     while (!state.haltSignal) {
-        usleep(1000);
+        usleep(100);
         step(&ctx, &state);
     }
 }

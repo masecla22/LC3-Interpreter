@@ -14,8 +14,8 @@ LabelledInstructionList* createLabelledInstructionList(void) {
 }
 
 void destroyLabelledInstruction(LabelledInstruction instruction) {
-    if (instruction.label != NULL) {
-        free(instruction.label);
+    if (instruction.labels != NULL) {
+        destroyLabels(instruction.labels);
     }
 
     switch (instruction.instruction.type) {
@@ -259,8 +259,15 @@ void printUnresolvedInstruction(UnresolvedInstruction instruction) {
 }
 
 void printLabelledInstruction(LabelledInstruction instruction) {
-    if (instruction.label != NULL) {
-        printf("%s ", instruction.label);
+    if (instruction.labels != NULL) {
+        for (unsigned int i = 0; i < instruction.labels->count; i++) {
+            printf("%s", instruction.labels->labels[i]);
+            if (i < instruction.labels->count - 1) {
+                printf(", ");
+            } else {
+                printf(" ");
+            }
+        }
     }
 
     printUnresolvedInstruction(instruction.instruction);

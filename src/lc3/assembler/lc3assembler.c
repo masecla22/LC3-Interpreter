@@ -87,13 +87,17 @@ ParsedInstructionList* resolveReferences() {
     // Go through all labels and add their locations ot the StringMap
     for (unsigned int i = 0; i < labelledInstructions->count; i++) {
         LabelledInstruction instruction = labelledInstructions->instructions[i];
-        if (instruction.label != NULL) {
-            // Make the label lowercase
-            for (unsigned int j = 0; j < strlen(instruction.label); j++) {
-                instruction.label[j] = tolower(instruction.label[j]);
-            }
+        if (instruction.labels != NULL) {
+            // Go through each label in the list
+            for (unsigned int l = 0; l < instruction.labels->count; l++) {
+                char* label = instruction.labels->labels[l];
+                // Make the label lowercase
+                for (unsigned int j = 0; j < strlen(label); j++) {
+                    label[j] = tolower(label[j]);
+                }
 
-            stringMapPut(labelMap, instruction.label, (void*)(long)(instruction.memoryLocation));
+                stringMapPut(labelMap, label, (void*)(long)(instruction.memoryLocation));
+            }
         }
     }
 
