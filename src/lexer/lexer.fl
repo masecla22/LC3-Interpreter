@@ -117,7 +117,7 @@ This assembler will not enforce the order, technically making it a bit more leni
       textPointer[length-1] = '\0';
     } else {
       fprintf(stderr, "Stringz directive must be enclosed in quotes in line %d.\n", linenr);
-      exit(EXIT_SUCCESS);
+      exit(1);
     }
     textPointer++;
   }
@@ -132,8 +132,7 @@ This assembler will not enforce the order, technically making it a bit more leni
 
 .           {
               fprintf(stderr, "Unrecognized character '%c' in line %d.\n", *yytext, linenr);
-              printf("ERRORS: 1\nREJECTED\n");
-              exit(EXIT_SUCCESS);
+              exit(1);
             }
 
 %%
