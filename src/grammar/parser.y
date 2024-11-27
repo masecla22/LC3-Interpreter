@@ -472,7 +472,15 @@ FillDirective : FILL Immediate
       {
         UnresolvedInstruction instruction = {0};
         instruction.type = D_FILL;
+        instruction.dFill.isResolved = 1;
         instruction.dFill.value = $2;
+        $$ = instruction;
+      } | FILL Label
+      {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = D_FILL;
+        instruction.dFill.isResolved = 0;
+        instruction.dFill.label = $2;
         $$ = instruction;
       };
 BlockDirective : BLKW Immediate
