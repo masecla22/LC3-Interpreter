@@ -53,7 +53,6 @@ typedef struct BranchInstruction {
     unsigned int pcOffset9;
 } BranchInstruction;
 
-
 typedef struct UnresolvedBranchInstruction {
     unsigned int nzp;
 
@@ -92,7 +91,7 @@ typedef struct LoadInstruction {
 } LoadInstruction;
 
 typedef struct UnresolvedLoadInstruction {
-    unsigned int destinationRegister;    
+    unsigned int destinationRegister;
     int isResolved;
 
     union {
@@ -101,8 +100,8 @@ typedef struct UnresolvedLoadInstruction {
     };
 } UnresolvedLoadInstruction;
 
-typedef LoadInstruction LoadIndirectInstruction;  // LDI is the same as LD (in terms of fields)
-typedef UnresolvedLoadInstruction UnresolvedLoadIndirectInstruction; // LDI is the same as LD (in terms of fields)
+typedef LoadInstruction LoadIndirectInstruction;                      // LDI is the same as LD (in terms of fields)
+typedef UnresolvedLoadInstruction UnresolvedLoadIndirectInstruction;  // LDI is the same as LD (in terms of fields)
 
 typedef struct LoadBaseOffsetInstruction {
     unsigned int destinationRegister;
@@ -110,7 +109,7 @@ typedef struct LoadBaseOffsetInstruction {
     unsigned int offset6;
 } LoadBaseOffsetInstruction;
 
-typedef LoadInstruction LoadEffectiveAddressInstruction;  // LEA is the same as LD (in terms of fields)
+typedef LoadInstruction LoadEffectiveAddressInstruction;                      // LEA is the same as LD (in terms of fields)
 typedef UnresolvedLoadInstruction UnresolvedLoadEffectiveAddressInstruction;  // LEA is the same as LD (in terms of fields)
 
 typedef struct NotInstruction {
@@ -133,9 +132,8 @@ typedef struct UnresolvedStoreInstruction {
     };
 } UnresolvedStoreInstruction;
 
-typedef StoreInstruction StoreIndirectInstruction;  // STI is the same as ST (in terms of fields)
+typedef StoreInstruction StoreIndirectInstruction;                      // STI is the same as ST (in terms of fields)
 typedef UnresolvedStoreInstruction UnresolvedStoreIndirectInstruction;  // STI is the same as ST (in terms of fields)
-
 
 typedef struct StoreBaseOffsetInstruction {
     unsigned int sourceRegister;
@@ -171,7 +169,6 @@ typedef struct StringzDirective {
     char* string;
 } StringzDirective;
 
-
 typedef struct ParsedInstruction {
     InstructionType type;
     int memoryLocation;
@@ -187,7 +184,7 @@ typedef struct ParsedInstruction {
         LoadIndirectInstruction iLdi;
         LoadBaseOffsetInstruction iLdr;
         LoadEffectiveAddressInstruction iLea;
-        
+
         NotInstruction iNot;
         // RET and RTI are not in the union because they don't have any fields
         StoreInstruction iSt;
@@ -223,7 +220,7 @@ typedef struct UnresolvedInstruction {
         UnresolvedLoadIndirectInstruction iLdi;
         LoadBaseOffsetInstruction iLdr;
         UnresolvedLoadEffectiveAddressInstruction iLea;
-        
+
         NotInstruction iNot;
         // RET and RTI are not in the union because they don't have any fields
         UnresolvedStoreInstruction iSt;
@@ -273,5 +270,15 @@ ParsedInstructionList* createParsedInstructionList(void);
 void destroyParsedInstructionList(ParsedInstructionList* list);
 void addParsedInstruction(ParsedInstructionList* list, ParsedInstruction instruction);
 
+typedef struct Labels {
+    char** labels;
+    unsigned int count;
+    unsigned int capacity;
+} Labels;
+
+Labels* createLabels(void);
+void destroyLabels(Labels* labels);
+
+void addLabel(Labels* labels, char* label);
 
 #endif

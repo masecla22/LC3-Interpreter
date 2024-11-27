@@ -404,3 +404,35 @@ void addParsedInstruction(ParsedInstructionList* list, ParsedInstruction instruc
 
     list->instructions[list->count++] = instruction;
 }
+
+Labels* createLabels(void) {
+    Labels* labels = calloc(1, sizeof(Labels));
+    labels->labels = calloc(16, sizeof(char*));
+    labels->count = 0;
+    labels->capacity = 16;
+
+    return labels;
+}
+
+void destroyLabels(Labels* labels) {
+    for (unsigned int i = 0; i < labels->count; i++) {
+        free(labels->labels[i]);
+    }
+
+    free(labels->labels);
+    free(labels);
+}
+
+void addLabel(Labels* labels, char* label) {
+    if (labels->count == labels->capacity - 2) {
+        labels->capacity *= 2;
+        labels->labels = realloc(labels->labels, sizeof(char*) * labels->capacity);
+
+        int oldCapacity = labels->capacity / 2;
+        for (unsigned int i = oldCapacity; i < labels->capacity; i++) {
+            labels->labels[i] = NULL;
+        }
+    }
+
+    labels->labels[labels->count++] = label;
+}
