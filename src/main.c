@@ -20,19 +20,29 @@ void destroyParser(void) {
     }
 }
 
-int main(int argc, char** argv) {
-    atexit(destroyParser);
-
-    parser = defaultCLIParserCreate(argc, argv);
-    result = cliParserParse(parser);
-
-    if (stringMapGet(result.flags, "help") != NULL) {
-        printHelpMessage(parser, stdout);
-        exit(0);
+void handleRandomization(int* seedOutput, int* randomizedOutput) {
+    int randomized = stringMapGet(result.flags, "randomized") != NULL;
+    int seed = 0;
+    char* seedStr = (char*)stringMapGet(result.flags, "seed");
+    if (seedStr != NULL) {
+        seed = atoi(seedStr);
+    } else {
+        seed = 0;
     }
 
-    char* inputFile = (char*)stringMapGet(result.flags, "input");
+    if (randomized) {
+        // Handle it here, no need to pass it to the LC3
+        srand(seed);
+        *seedOutput = seed;
+        *randomizedOutput = randomized;
+    } else {
+        *seedOutput = 0;
+        *randomizedOutput = 0;
+    }
+}
 
+FILE* getInputFile() {
+    char* inputFile = (char*)stringMapGet(result.flags, "input");
     FILE* input = NULL;
     if (inputFile == NULL || strcmp(inputFile, "-") == 0) {
         input = stdin;
@@ -44,6 +54,10 @@ int main(int argc, char** argv) {
         }
     }
 
+    return input;
+}
+
+FILE* getOutputFile() {
     char* outputFile = (char*)stringMapGet(result.flags, "output");
     FILE* output = NULL;
     if (outputFile == NULL || strcmp(outputFile, "-") == 0) {
@@ -56,29 +70,61 @@ int main(int argc, char** argv) {
         }
     }
 
-    int randomized = stringMapGet(result.flags, "randomized") != NULL;
-    int seed = 0;
-    char* seedStr = (char*)stringMapGet(result.flags, "seed");
-    if (seedStr != NULL) {
-        seed = atoi(seedStr);
-    } else {
-        seed = 0;
+    return output;
+}
+
+int main(int argc, char** argv) {
+    atexit(destroyParser);
+
+    parser = defaultCLIParserCreate(argc, argv);
+    result = cliParserParse(parser);
+
+    if (stringMapGet(result.flags, "help") != NULL) {
+        printHelpMessage(parser, stdout);
+        exit(0);
     }
 
-    // Free the memory allocated by the parser
+    FILE* input = getInputFile();
+    FILE* output = getOutputFile();
+
+    int seed = 0;
+    int randomized = 0;
+
+    handleRandomization(&seed, &randomized);
+
+    // Check if we are assembling or emulating
+    int onlyAssemble = stringMapGet(result.flags, "assemble") != NULL;
+    int onlyEmulate = stringMapGet(result.flags, "emulate") != NULL;
+
+    // Free the memory allocated by the CLI parser
     destroyParser();
 
-    if (randomized) {
-        // Handle it here, no need to pass it to the LC3
-        srand(seed);
+    if (onlyAssemble && onlyEmulate) {
+        fprintf(stderr, "To both emulate and assemble omit both flags.\n");
+        exit(1);
     }
 
-    LC3Context context = {input, output, randomized, seed};
-    LC3EmulatorState emulatorState = assemble(context);
+    if (onlyAssemble) {
+        LC3Context context = {input, output, randomized, seed};
+        LC3EmulatorState emulatorState = assemble(context);
 
-    // Run the emulator
-    emulate(context, emulatorState);
-    
+        // Dump the memory to the output file.
+        dumpToFile(&emulatorState, output);
+    } else if (onlyEmulate) {
+        LC3EmulatorState emulatorState = loadFromFile(input);
+        emulate((LC3Context){input, output, randomized, seed}, emulatorState);
+    } else {
+        LC3Context context = {input, output, randomized, seed};
+        LC3EmulatorState emulatorState = assemble(context);
+
+        // Run the emulator
+        emulate(context, emulatorState);
+
+        // Free the memory
+        free(emulatorState.memory);
+        emulatorState.memory = NULL;
+    }
+
     // Close the files
     if (input != stdin) {
         fclose(input);
@@ -86,8 +132,4 @@ int main(int argc, char** argv) {
     if (output != stdout) {
         fclose(output);
     }
-
-
-    // Free the memory
-    free(emulatorState.memory);
 }

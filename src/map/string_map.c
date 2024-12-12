@@ -8,12 +8,12 @@ TrieNode* trieNodeCreate() {
 }
 
 TrieNode* trieNodeGetChild(TrieNode* node, char c) {
-    if(node->children == NULL) {
+    if (node->children == NULL) {
         node->children = (TrieNode**)calloc(256, sizeof(TrieNode*));
     }
 
     unsigned char uc = (unsigned char)c;
-    if(node->children[uc] == NULL) {
+    if (node->children[uc] == NULL) {
         node->children[uc] = trieNodeCreate();
     }
 
@@ -28,7 +28,7 @@ StringMap* stringMapCreate() {
 
 void stringMapPut(StringMap* map, const char* key, void* value) {
     TrieNode* node = map->root;
-    for(int i = 0; key[i] != '\0'; i++) {
+    for (int i = 0; key[i] != '\0'; i++) {
         node = trieNodeGetChild(node, key[i]);
     }
     node->value = value;
@@ -36,8 +36,8 @@ void stringMapPut(StringMap* map, const char* key, void* value) {
 
 void* stringMapGet(StringMap* map, char* key) {
     TrieNode* node = map->root;
-    for(int i = 0; key[i] != '\0'; i++) {
-        if(node->children == NULL || node->children[(unsigned char)key[i]] == NULL) {
+    for (int i = 0; key[i] != '\0'; i++) {
+        if (node->children == NULL || node->children[(unsigned char)key[i]] == NULL) {
             return NULL;
         }
         node = node->children[(unsigned char)key[i]];
@@ -47,8 +47,8 @@ void* stringMapGet(StringMap* map, char* key) {
 
 void stringMapRemove(StringMap* map, char* key) {
     TrieNode* node = map->root;
-    for(int i = 0; key[i] != '\0'; i++) {
-        if(node->children == NULL || node->children[(unsigned char)key[i]] == NULL) {
+    for (int i = 0; key[i] != '\0'; i++) {
+        if (node->children == NULL || node->children[(unsigned char)key[i]] == NULL) {
             return;
         }
         node = node->children[(unsigned char)key[i]];
@@ -57,16 +57,16 @@ void stringMapRemove(StringMap* map, char* key) {
 }
 
 void trieNodeDestroy(TrieNode* node, int freeValues) {
-    if(node->children != NULL) {
-        for(int i = 0; i < 256; i++) {
-            if(node->children[i] != NULL) {
+    if (node->children != NULL) {
+        for (int i = 0; i < 256; i++) {
+            if (node->children[i] != NULL) {
                 trieNodeDestroy(node->children[i], freeValues);
             }
         }
         free(node->children);
     }
 
-    if(freeValues && node->value != NULL) {
+    if (freeValues && node->value != NULL) {
         free(node->value);
     }
 
@@ -74,7 +74,7 @@ void trieNodeDestroy(TrieNode* node, int freeValues) {
 }
 
 void stringMapDestroy(StringMap* map, int freeValues) {
-    if(map == NULL) {
+    if (map == NULL) {
         return;
     }
 
@@ -82,16 +82,14 @@ void stringMapDestroy(StringMap* map, int freeValues) {
     free(map);
 }
 
-
-
 void applyToAllValuesRec(TrieNode* node, void (*func)(void*)) {
-    if(node->value != NULL) {
+    if (node->value != NULL) {
         func(node->value);
     }
 
-    if(node->children != NULL) {
-        for(int i = 0; i < 256; i++) {
-            if(node->children[i] != NULL) {
+    if (node->children != NULL) {
+        for (int i = 0; i < 256; i++) {
+            if (node->children[i] != NULL) {
                 applyToAllValuesRec(node->children[i], func);
             }
         }
