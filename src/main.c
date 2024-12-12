@@ -6,6 +6,7 @@
 #include "lc3/assembler/lc3assembler.h"
 #include "lc3/context/lc3context.h"
 #include "lc3/emulator/lc3emulator.h"
+#include "lc3/expecter/expecter.h"
 
 CLIParser* parser = NULL;
 CLIParseResult result = {NULL};
@@ -73,6 +74,62 @@ FILE* getOutputFile() {
     return output;
 }
 
+void printExpectations(char* expectFile, LC3EmulatorState emulatorState) {
+    if (expectFile == NULL) {
+        return;
+    }
+
+    FILE* expect = fopen(expectFile, "r");
+    if (expect == NULL) {
+        fprintf(stderr, "Could not open expectations file: %s\n", expectFile);
+        exit(1);
+    }
+
+    EmulatorExpectations expectations = loadExpectationFromFile(expect);
+
+    // If there's an expect file, check the output
+    for (int i = 0; i < 8; i++) {
+        if (expectations.output.expectedRegisters[i]) {
+            printf("R%d: %d\n", i, emulatorState.registers[i]);
+        }
+    }
+
+    for (int i = 0; i < 65536; i++) {
+        if (expectations.output.expectedMemory[i]) {
+            printf("MEM x%04x: %d\n", i, emulatorState.memory[i].parsedNumber);
+        }
+    }
+
+    fclose(expect);
+}
+
+void injectExpectations(char* expectFile, LC3EmulatorState* emulatorState) {
+    if (expectFile == NULL) {
+        return;
+    }
+
+    FILE* expect = fopen(expectFile, "r");
+    if (expect == NULL) {
+        fprintf(stderr, "Could not open expectations file: %s\n", expectFile);
+        exit(1);
+    }
+
+    EmulatorExpectations expectations = loadExpectationFromFile(expect);
+    fclose(expect);
+
+    for (int i = 0; i < 8; i++) {
+        if (expectations.input.replaceRegisters[i]) {
+            emulatorState->registers[i] = expectations.input.registerReplacements[i];
+        }
+    }
+
+    for (int i = 0; i < 65536; i++) {
+        if (expectations.input.replaceMemory[i]) {
+            emulatorState->memory[i].parsedNumber = expectations.input.memoryReplacements[i];
+        }
+    }
+}
+
 int main(int argc, char** argv) {
     atexit(destroyParser);
 
@@ -96,9 +153,6 @@ int main(int argc, char** argv) {
     int onlyAssemble = stringMapGet(result.flags, "assemble") != NULL;
     int onlyEmulate = stringMapGet(result.flags, "emulate") != NULL;
 
-    // Free the memory allocated by the CLI parser
-    destroyParser();
-
     if (onlyAssemble && onlyEmulate) {
         fprintf(stderr, "To both emulate and assemble omit both flags.\n");
         exit(1);
@@ -112,13 +166,29 @@ int main(int argc, char** argv) {
         dumpToFile(&emulatorState, output);
     } else if (onlyEmulate) {
         LC3EmulatorState emulatorState = loadFromFile(input);
-        emulate((LC3Context){input, output, randomized, seed}, emulatorState);
+
+        // If there's an expect file, load it and inject state
+        char* expectFile = (char*)stringMapGet(result.flags, "expect");
+        injectExpectations(expectFile, &emulatorState);
+
+        emulate((LC3Context){input, output, randomized, seed}, &emulatorState);
+
+        // Print the expectations
+        printExpectations(expectFile, emulatorState);
     } else {
         LC3Context context = {input, output, randomized, seed};
         LC3EmulatorState emulatorState = assemble(context);
 
+        // If there's an expect file, load it and inject state
+        char* expectFile = (char*)stringMapGet(result.flags, "expect");
+
+        injectExpectations(expectFile, &emulatorState);
+
         // Run the emulator
-        emulate(context, emulatorState);
+        emulate(context, &emulatorState);
+
+        // Print the expectations
+        printExpectations(expectFile, emulatorState);
 
         // Free the memory
         free(emulatorState.memory);
@@ -132,4 +202,6 @@ int main(int argc, char** argv) {
     if (output != stdout) {
         fclose(output);
     }
+
+    return 0;
 }

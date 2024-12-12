@@ -412,8 +412,6 @@ void printState(LC3EmulatorState *state) {
 
 void step(LC3Context *ctx, LC3EmulatorState *state) {
     unsigned short pc = state->pc;
-    // printState(state);
-
     state->pc++;
 
     unsigned short instruction = state->memory[pc].rawNumber;
@@ -475,9 +473,9 @@ void step(LC3Context *ctx, LC3EmulatorState *state) {
     }
 }
 
-void emulate(LC3Context ctx, LC3EmulatorState state) {
-    while (!state.haltSignal) {
-        step(&ctx, &state);
+void emulate(LC3Context ctx, LC3EmulatorState *state) {
+    while (!state->haltSignal) {
+        step(&ctx, state);
     }
 }
 

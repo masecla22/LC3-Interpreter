@@ -16,7 +16,7 @@ typedef struct LC3EmulatorState {
     unsigned short haltSignal;
 } LC3EmulatorState;
 
-void emulate(LC3Context ctx, LC3EmulatorState state);
+void emulate(LC3Context ctx, LC3EmulatorState *state);
 
 void dumpToFile(LC3EmulatorState *state, FILE *output);
 LC3EmulatorState loadFromFile(FILE *input);
