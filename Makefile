@@ -18,6 +18,10 @@ all: parser lexer string_map lc3 cli
 		$(CC) $(CFLAGS) -o target/main.o -c src/main.c
 		$(CC) $(CFLAGS) -o target/lc3 target/main.o target/lexer/lexer.o target/grammar/parser.o target/map/string_map.o target/cli/cli.o target/cli/default/default_cli.o target/_lc3/assembler/lc3assembler.o target/_lc3/assembler/lc3isa.o target/_lc3/assembler/lc3emulator.o -lfl
 
+install: all
+		cp target/lc3 /usr/local/bin/lc3
+
+
 lexer: src/lexer/lexer.fl
 		mkdir -p target/lexer
 		flex -o target/lexer/lexer.c src/lexer/lexer.fl 
