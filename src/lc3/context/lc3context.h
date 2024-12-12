@@ -9,6 +9,7 @@ typedef struct LC3Context {
 
     int randomized;
     int seed;
+    int maxCycleCount;
 } LC3Context;
 
 #endif // LC3_CONTEXT_H

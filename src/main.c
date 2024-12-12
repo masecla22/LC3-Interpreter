@@ -158,8 +158,14 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
+    int maxCycles = 0;
+    char* maxCyclesStr = (char*)stringMapGet(result.flags, "max-cycles");
+    if (maxCyclesStr != NULL) {
+        maxCycles = atoi(maxCyclesStr);
+    }
+
     if (onlyAssemble) {
-        LC3Context context = {input, output, randomized, seed};
+        LC3Context context = {input, output, randomized, seed, maxCycles};
         LC3EmulatorState emulatorState = assemble(context);
 
         // Dump the memory to the output file.
@@ -171,12 +177,12 @@ int main(int argc, char** argv) {
         char* expectFile = (char*)stringMapGet(result.flags, "expect");
         injectExpectations(expectFile, &emulatorState);
 
-        emulate((LC3Context){input, output, randomized, seed}, &emulatorState);
+        emulate((LC3Context){input, output, randomized, seed, maxCycles}, &emulatorState);
 
         // Print the expectations
         printExpectations(expectFile, emulatorState);
     } else {
-        LC3Context context = {input, output, randomized, seed};
+        LC3Context context = {input, output, randomized, seed, maxCycles};
         LC3EmulatorState emulatorState = assemble(context);
 
         // If there's an expect file, load it and inject state
