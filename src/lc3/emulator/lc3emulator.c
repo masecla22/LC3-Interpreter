@@ -92,9 +92,7 @@ static inline void stepAdd(LC3EmulatorState *state, unsigned short instruction) 
     // state->cc = result == 0 ? 2 : result < 0 ? 4 : 1;
 
     short sr1 = state->registers[getRaw(instruction, 6, 3)];
-    short sr2 = instruction & (1 << 5) ? 
-        getAsNumber(instruction, 0, 5) : 
-        state->registers[getRaw(instruction, 0, 3)];
+    short sr2 = instruction & (1 << 5) ? getAsNumber(instruction, 0, 5) : state->registers[getRaw(instruction, 0, 3)];
     short result = sr1 + sr2;
 
     state->registers[getRaw(instruction, 9, 3)] = result;
@@ -132,7 +130,7 @@ static inline void stepJsrJsrr(LC3EmulatorState *state, unsigned short instructi
         unsigned short baseRegister = getRaw(instruction, 6, 3);
         state->registers[7] = state->pc;
         state->pc = state->registers[baseRegister];
-    } 
+    }
 }
 static inline void stepAnd(LC3EmulatorState *state, unsigned short instruction) {
     // short sr1 = state->registers[instruction->add_and.sr1];
@@ -393,7 +391,6 @@ void printHexInstruction(unsigned short instruction) {
             }
             break;
     }
-
 }
 
 void printState(LC3EmulatorState *state) {
@@ -422,12 +419,9 @@ void step(LC3Context *ctx, LC3EmulatorState *state) {
     unsigned short instruction = state->memory[pc].rawNumber;
     unsigned short opcode = getRaw(instruction, 12, 4);
 
-    if(instruction == 0)
-    {
-        printf("sus\n");
+    if (instruction == 0) {
         exit(1);
     }
-
 
     switch (opcode) {
         case 0:
@@ -486,7 +480,6 @@ void emulate(LC3Context ctx, LC3EmulatorState state) {
         step(&ctx, &state);
     }
 }
-
 
 void dumpToFile(LC3EmulatorState *state, FILE *output) {
     // Start by dumping all surrounding memory (registers, pc, cc, haltSignal)
