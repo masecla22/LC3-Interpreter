@@ -16,7 +16,7 @@ test_valgrind: all
 all: parser lexer string_map lc3 cli
 		mkdir -p target
 		$(CC) $(CFLAGS) -o target/main.o -c src/main.c
-		$(CC) $(CFLAGS) -o target/lc3 target/main.o target/lexer/lexer.o target/grammar/parser.o target/map/string_map.o target/cli/cli.o target/cli/default/default_cli.o target/_lc3/assembler/lc3assembler.o target/_lc3/assembler/lc3isa.o target/_lc3/assembler/lc3emulator.o -lfl
+		$(CC) $(CFLAGS) -o target/lc3 target/main.o target/lexer/lexer.o target/grammar/parser.o target/map/string_map.o target/cli/cli.o target/cli/default/default_cli.o target/_lc3/assembler/lc3assembler.o target/_lc3/assembler/lc3isa.o target/_lc3/assembler/lc3emulator.o target/_lc3/assembler/expecter.o -lfl
 
 install: all
 		cp target/lc3 /usr/local/bin/lc3
@@ -40,6 +40,7 @@ lc3: src/lc3/assembler/lc3assembler.c src/lc3/instructions/lc3isa.c src/lc3/emul
 		 $(CC) $(CFLAGS) -c src/lc3/assembler/lc3assembler.c -o target/_lc3/assembler/lc3assembler.o
 		 $(CC) $(CFLAGS) -c src/lc3/instructions/lc3isa.c -o target/_lc3/assembler/lc3isa.o
 		 $(CC) $(CFLAGS) -c src/lc3/emulator/lc3emulator.c -o target/_lc3/assembler/lc3emulator.o
+		 $(CC) $(CFLAGS) -c src/lc3/expecter/expecter.c -o target/_lc3/assembler/expecter.o
 
 cli: src/cli/cli.c src/cli/default/default_cli.c
 		 mkdir -p target/cli
