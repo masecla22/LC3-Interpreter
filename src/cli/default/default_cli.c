@@ -10,6 +10,8 @@ CLIParser* defaultCLIParserCreate(int argc, char** argv) {
     cliParserAddNoValueFlag(parser, "emulate", "Emulates a .bin file", 'e');
 
     cliParserAddValueFlag(parser, "seed", "Sets the seed for the random number generator", 's', "seed");
+    cliParserAddValueFlag(parser, "expect", "Sets the expectations file for the emulator", 'x', "file");
+
 
     cliParserAddValueFlag(parser, "input", "Sets the input file (- for stdin)", 'i', "file");
     cliParserAddValueFlag(parser, "output", "Sets the output file (- for stdout)", 'o', "file");
