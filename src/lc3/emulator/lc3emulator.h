@@ -18,4 +18,8 @@ typedef struct LC3EmulatorState {
 
 void emulate(LC3Context ctx, LC3EmulatorState state);
 
+void dumpToFile(LC3EmulatorState *state, FILE *output);
+LC3EmulatorState loadFromFile(FILE *input);
+
+
 #endif // LC3_EMULATOR

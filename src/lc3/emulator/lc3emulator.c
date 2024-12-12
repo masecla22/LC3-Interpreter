@@ -486,3 +486,34 @@ void emulate(LC3Context ctx, LC3EmulatorState state) {
         step(&ctx, &state);
     }
 }
+
+
+void dumpToFile(LC3EmulatorState *state, FILE *output) {
+    // Start by dumping all surrounding memory (registers, pc, cc, haltSignal)
+    fwrite(&state->registers, sizeof(short), 8, output);
+    fwrite(&state->pc, sizeof(unsigned short), 1, output);
+    fwrite(&state->cc, sizeof(unsigned short), 1, output);
+    fwrite(&state->haltSignal, sizeof(unsigned short), 1, output);
+
+    // Now dump the memory
+    fwrite(state->memory, sizeof(MemoryCell), 65536, output);
+
+    // Now flush the output
+    fflush(output);
+}
+
+LC3EmulatorState loadFromFile(FILE *input) {
+    LC3EmulatorState state = {0};
+
+    // Start by loading all surrounding memory (registers, pc, cc, haltSignal)
+    fread(&state.registers, sizeof(short), 8, input);
+    fread(&state.pc, sizeof(unsigned short), 1, input);
+    fread(&state.cc, sizeof(unsigned short), 1, input);
+    fread(&state.haltSignal, sizeof(unsigned short), 1, input);
+
+    // Now load the memory
+    state.memory = calloc(65536, sizeof(MemoryCell));
+    fread(state.memory, sizeof(MemoryCell), 65536, input);
+
+    return state;
+}

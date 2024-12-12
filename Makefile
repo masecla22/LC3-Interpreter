@@ -21,7 +21,6 @@ all: parser lexer string_map lc3 cli
 install: all
 		cp target/lc3 /usr/local/bin/lc3
 
-
 lexer: src/lexer/lexer.fl
 		mkdir -p target/lexer
 		flex -o target/lexer/lexer.c src/lexer/lexer.fl 
