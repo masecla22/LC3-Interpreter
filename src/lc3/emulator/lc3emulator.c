@@ -483,11 +483,6 @@ void step(LC3Context *ctx, LC3EmulatorState *state) {
 
 void emulate(LC3Context ctx, LC3EmulatorState state) {
     while (!state.haltSignal) {
-        usleep(100);
         step(&ctx, &state);
     }
 }
-
-// void main() {
-//     printf("%d", sizeof(EmulatorInstruction));
-// }
