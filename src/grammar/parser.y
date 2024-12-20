@@ -420,8 +420,12 @@ GetCharacterMacro : GETC
         instruction.type = M_GETC;
         $$ = instruction;
       };
-OutputMacro : OUT | PUTC
+OutputMacro : OUT
       {
+        UnresolvedInstruction instruction = {0};
+        instruction.type = M_OUT;
+        $$ = instruction;
+      } | PUTC {
         UnresolvedInstruction instruction = {0};
         instruction.type = M_OUT;
         $$ = instruction;
