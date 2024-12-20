@@ -41,7 +41,7 @@ LabelledInstructionList *labelledInstructions; // List of parsed instructions
 %token ADD AND JMP JSR JSRR LD LDI LDR LEA NOT RET RTI ST STI STR TRAP
 
 %{/** Tokens for LC-3 Pseudo instructions */%}
-%token GETC OUT PUTS PUTSP IN HALT
+%token GETC OUT PUTC PUTS PUTSP IN HALT
 
 %{/** Tokens for LC-3 Condition flags */%}
 %token BR BR_P BR_Z BR_N BR_PZ BR_PN BR_ZN BR_PZN
@@ -420,7 +420,7 @@ GetCharacterMacro : GETC
         instruction.type = M_GETC;
         $$ = instruction;
       };
-OutputMacro : OUT
+OutputMacro : OUT | PUTC
       {
         UnresolvedInstruction instruction = {0};
         instruction.type = M_OUT;
