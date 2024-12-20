@@ -45,6 +45,7 @@ stringzDirective  (?i:\.stringz)[ \t]*(\"[^\"\n]*\"|[^ \t\n]+)
 %{ /* LC-3 Pseudo instructions */ %}
 (?i:getc)                {eat(); return GETC;}
 (?i:out)                 {eat(); return OUT;}
+(?i:putc)                {eat(); return PUTC;}
 (?i:puts)                {eat(); return PUTS;}
 (?i:putsp)                {eat(); return PUTSP;}
 (?i:in)                  {eat(); return IN;}
