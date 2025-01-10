@@ -417,10 +417,6 @@ void step(LC3Context *ctx, LC3EmulatorState *state) {
     unsigned short instruction = state->memory[pc].rawNumber;
     unsigned short opcode = getRaw(instruction, 12, 4);
 
-    if (instruction == 0) {
-        exit(1);
-    }
-
     switch (opcode) {
         case 0:
             stepBr(state, instruction);
