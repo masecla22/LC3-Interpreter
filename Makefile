@@ -4,7 +4,7 @@
 
 
 CC = gcc
-CFLAGS = -Wno-unused-parameter -Wall -Wextra -Werror -pedantic -g
+CFLAGS = -O2 -Wno-unused-parameter -Wall -Wextra -Werror -pedantic -g
 
 
 test: all
@@ -29,7 +29,7 @@ lexer: src/lexer/lexer.fl
 parser: src/grammar/parser.y
 		 mkdir -p target/grammar
 		 bison -d -o target/grammar/parser.c src/grammar/parser.y 
-		 $(CC) $(CFLAGS) -O2 -c target/grammar/parser.c -o target/grammar/parser.o
+		 $(CC) $(CFLAGS) -c target/grammar/parser.c -o target/grammar/parser.o
 
 string_map: src/map/string_map.c
 		 mkdir -p target/map
