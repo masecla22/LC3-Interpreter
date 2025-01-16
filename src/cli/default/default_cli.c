@@ -1,7 +1,7 @@
 #include "../cli.h"
 
 CLIParser* defaultCLIParserCreate(int argc, char** argv) {
-    CLIParser* parser = cliParserCreate(argc, argv, "\nLC3 Toolchain by Matt\nVersion 1.0.0");
+    CLIParser* parser = cliParserCreate(argc, argv, "\nLC3 Toolchain by Matt\nVersion 1.0.2");
 
     cliParserAddNoValueFlag(parser, "help", "Prints the help message", 'h');
     cliParserAddNoValueFlag(parser, "randomized", "Randomizes the LC3 memory space before execution", 'r');
