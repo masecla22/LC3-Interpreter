@@ -249,8 +249,12 @@ static inline void stepTrap(LC3EmulatorState *state, unsigned short instruction)
 
     if (trapVector == 0x20) {
         // GETC
-        char c = getchar();
-        state->registers[0] = c;
+        int c = getchar();
+        if (c == -1) {
+            perror("\n\nGETC called after end of input!");
+            exit(1);
+        }
+        state->registers[0] = (char)c;
     } else if (trapVector == 0x21) {
         // OUT
         putchar(state->registers[0]);
