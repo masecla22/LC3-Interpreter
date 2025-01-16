@@ -10,6 +10,8 @@ typedef struct LC3Context {
     int randomized;
     int seed;
     int maxCycleCount;
+    int debugMode;
+    int benchmarkMode;
 } LC3Context;
 
 #endif // LC3_CONTEXT_H

@@ -473,6 +473,10 @@ void emulate(LC3Context ctx, LC3EmulatorState *state) {
     int currentCycle = 0;
 
     while (!state->haltSignal) {
+        if (ctx.debugMode) {
+            printState(state);
+        }
+
         step(&ctx, state);
         currentCycle++;
 
@@ -480,6 +484,10 @@ void emulate(LC3Context ctx, LC3EmulatorState *state) {
             fprintf(stderr, "Exceeded maximum cycle count of %d\n", ctx.maxCycleCount);
             exit(99);
         }
+    }
+
+    if (ctx.benchmarkMode) {
+        printf("\n===========\nExecution took %d cycles.\n===========\n", currentCycle);
     }
 }
 
