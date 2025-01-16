@@ -257,7 +257,8 @@ static inline void stepTrap(LC3EmulatorState *state, unsigned short instruction)
         fflush(stdout);
     } else if (trapVector == 0x22) {
         // PUTS
-        unsigned short *address = &state->memory[state->registers[0]].rawNumber;
+        unsigned short registerValue = state->registers[0];
+        unsigned short *address = &state->memory[registerValue].rawNumber;
         while (*address) {
             putchar(*address);
             address++;
@@ -272,7 +273,8 @@ static inline void stepTrap(LC3EmulatorState *state, unsigned short instruction)
         fflush(stdout);
     } else if (trapVector == 0x24) {
         // PUTSP
-        unsigned short *address = &state->memory[state->registers[0]].rawNumber;
+        unsigned short registerValue = state->registers[0];
+        unsigned short *address = &state->memory[registerValue].rawNumber;
         while (*address) {
             char c = (*address) & 0xFF;
             putchar(c);
